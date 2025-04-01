@@ -7,4 +7,5 @@ Si nos dice que ya esta ocupado el puerto, se lo especificamos
     - http-server -p NUMERO
 
 Despues de esto tenemos que usar la URL del localhost (Solo ahi y tener el HTTPS es como puede funcionar el PWA)
-
+Para ejecutar nuestros archivos de Js, solo especificamos:
+    - node NombreArchivo.js
