@@ -1,0 +1,10 @@
+La paginas no las debemos de abrir directamente sino que tenemos que hacerlo mediante el Localhost
+para que funcione lo de las promesas y FetchAPI, para eso instalamos:
+    -  npm install http-server -g
+Para ejecutar el archivo (Dentro del directorio):
+    - http-server
+Si nos dice que ya esta ocupado el puerto, se lo especificamos
+    - http-server -p NUMERO
+
+Despues de esto tenemos que usar la URL del localhost (Solo ahi y tener el HTTPS es como puede funcionar el PWA)
+
