@@ -18,7 +18,29 @@ self.addEventListener('install', event => {
     // Esto es por si queremos que el nuevo SW tome el control inmediatamente despues que se instala
     // y que no se espera a que el cliente cierre todo el navegador o precionar el SkipWaiting
     // Igual usar esto puede hacer que se pierda informacion que los clientes tienen o estan esperando
-    self.skipWaiting();
+    //      self.skipWaiting();
+
+    /*
+        Usualmente cuando hacemos la instalacion o la activacion o recibimos una notificacion PUSH
+        o tratamos de sincronizar datos con el servidor cuando se recupera la conexion a internet
+        todo esto el SW lo ejecuta muy rapido, pero no todos los pasos se ejecutan tan rapido como 
+        cargar informacion al cache, entonces en ese caso el evento que contiene esa tarea se ejecuta
+        mas lento y los demas se tienen que esperar a que termine sus tareas
+
+        Supongamos que este time, hace la tarea de instalacion donde simularemos que guardar en el cache demora
+        un segundo
+    */
+    const instalacion = new Promise( (resolve, reject) => {
+        setTimeout(() => {
+            console.log('SW: Instalacion terminadas');
+            resolve(); // lamamos para indicar que se termino la promesa
+        }, 1000);
+    });
+
+    // Asi como tenemos esto, veremos en consola que primero se ejecuta, el listanaer de install, luego el listener de activated
+    // y al final nos muestra este mensaje del Time, deberiamos de hacer a que las instalaciones terminen para que se pueda ir a la activacion
+    // Para solucionarlo en todos los eventos existe el metodo ".waitUntil()" y se le pasa una promesa
+    event.waitUntil( instalacion );
 });
 
 // Este listener se ejecuta cuando el SW se activa
