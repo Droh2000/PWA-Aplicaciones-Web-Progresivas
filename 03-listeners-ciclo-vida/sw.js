@@ -65,3 +65,13 @@ self.addEventListener('fetch', event => {
         event.responseWith( resp );
     }
 });
+
+// Este se usa cuando perdimos la conexion y la recuperamos (Se usa para hacer las peticiones HTTP offline)
+self.addEventListener('sync', event => {
+    console.log('Tenemos conexion',event)
+    // Normalmente cuando queremos hacer posteo y se puede hacer en segundo plano, se le tiene que 
+    // asignar una etiqueta que sera el identificador para que cuando se recupere la conexion y se dipare este evento SYNC
+    // vamos a revisar por tags lo que quedriamos realizar, esto se hace tomando la base de datos IndexedDB donde se almacenan
+    // las peticiones para activarse hasta que se tiene la conexion a internet
+    console.log(event.tag);
+});
