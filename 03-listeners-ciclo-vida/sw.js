@@ -14,4 +14,16 @@ self.addEventListener('install', event => {
     // Empieza esta fase de Instalacion (Si volvemos a recargar el navegador ya no sale el mensaje 
     // ya que el navegador sabe que es el mismo SW que antes)
     console.log('Instalando el Service Worker');
+
+    // Esto es por si queremos que el nuevo SW tome el control inmediatamente despues que se instala
+    // y que no se espera a que el cliente cierre todo el navegador o precionar el SkipWaiting
+    // Igual usar esto puede hacer que se pierda informacion que los clientes tienen o estan esperando
+    self.skipWaiting();
+});
+
+// Este listener se ejecuta cuando el SW se activa
+self.addEventListener('activate', event => {
+    // Usualmente esto se usa para borrar cache viejo que es cuando el antiguo Sw murio y ya no queremos mantener sis caches
+    // Este mensaje solo se muestra la primera vez, si volvemos a recargar el navegador no se tiene porque activar lo que ya esta activo
+    console.log('SW activo y listo para controlar la aplicacion');
 });
