@@ -1,0 +1,6 @@
+Para que aqui funcione el SW debemos estar en la Ruta: localhost:PUERTO
+En la pestaña de Red, activemos la opcion de Deshabilitar la memoria del Cache para que el navegador usar los archivos mas nuevos
+
+En cualquier cambio a nuestro proyecto hara que se cree un nuevo Service Worker y este si se instalara en el navegador
+Esto al revisar en la pestaña de Application veremos que el nuevo SW esta esperando a ser instalado y que precionemos la opcion de skipWaiting
+para que el nuevo SW controle la pagina (Esto ademas dispara todo el ciclo de vida del SW)
