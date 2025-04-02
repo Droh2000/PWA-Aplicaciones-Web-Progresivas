@@ -49,3 +49,19 @@ self.addEventListener('activate', event => {
     // Este mensaje solo se muestra la primera vez, si volvemos a recargar el navegador no se tiene porque activar lo que ya esta activo
     console.log('SW activo y listo para controlar la aplicacion');
 });
+
+// Listener para el manejo de peticiones HTTP, intercepcion de recursos de la aplicacion
+self.addEventListener('fetch', event => {
+    // Aqui es donde se aplican las estrategias del cache, determinamos si dejamos algo almacenado o mejor lo tomamos directamente de la web
+    // En este mensaje veremos que es atrapada la peticion HTTP de archivo "app.js"
+    console.log( 'SW', event.request.url );
+
+    // Verificamos si la peticion es la del API entonces vamos a manejar la respuesta diferente
+    if( event.request.url.includes('https://reqres.in/') ){
+        // Creamos una nueva respuesta
+        const resp = new Response(`{ ok: false, mensaje: 'jajaja'}`);
+
+        // Con esto veremos que se hace la solicitud HTTP pero el SW nos regresa otra cosa
+        event.responseWith( resp );
+    }
+});
