@@ -75,3 +75,10 @@ self.addEventListener('sync', event => {
     // las peticiones para activarse hasta que se tiene la conexion a internet
     console.log(event.tag);
 });
+
+// Para manejar las Push Notification: si se las queremos mandar a todos los usarios o solo a unos cuantos
+self.addEventListener('push', event => {
+    // Para ver este mensaje tenemos que ir a la pestana de Application - Service Worker y ahi encontramos
+    // el boton que dice Push que al precionarlo veremos el mensaje
+    console.log('Notificacion recibida');
+});

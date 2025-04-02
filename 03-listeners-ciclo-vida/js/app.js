@@ -11,6 +11,16 @@ if ( navigator.serviceWorker ) {
             reg.sync.register('postos-offline');
             console.log('Se enviaron los datos que se hizieron Offline');
         }, 3000);
+
+        // Para mostrar una notificacion hay varias formas (Estas solo se pueden mandar con consentimiento del usuario)
+        Notification.requestPermission().then( result => {
+            // Aqui verificamos si el usuario acepta o las rechazas, segun eso las podemos mandar o no
+            // Mostramos el resultado de lo que el usuario seleccione
+            console.log(result);
+
+            // Requerimos usar el Registro del Service Worker para poder mandar la notificacion, Por eso lo metimos dentro de esta promesa
+            reg.showNotification('Hola prros');
+        })
     });
     // Cuando se registre esta tarea y recuperemos la conexion a internet deberiamos de ver los mensaje del Listener SYNC
     // Para que esto funcion tenemos que cortar completamente el internet de la PC (No funciona si activamos el Offline)
