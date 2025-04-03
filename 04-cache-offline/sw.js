@@ -8,10 +8,20 @@
 
     Queremos guardar los cosas del App Shell en el cache, esto se hace cuando se instala el SW
 */
-const CACHE_NAME = 'cache-1';
+// const CACHE_NAME = 'cache-1';
+
+// Con la estrategia de Cache with network fallback pasa un problema
+// Si nos vamos al cache veremos que se nos mezclan cosas importantes del App Shell con recursos dinamicos (Informacion que puede ser obsoleta)
+// Podemos tener diferentes caches para manejarlo mejor (La idea es que tengamos diferentes contenidos)
+// ademas le especificamos versiones porque puede que hagamos un gran cambio que para mantener los otros archivos creamos otro archivo
+const CACHE_STATIC_NAME = 'static-v1';
+const CACHE_DYNAMIC_NAME = 'dynamic-v1';
+// Podemos considerar el cache inmutable (En este se meteria por ejemplo los del boostrap, ya que como estos archivo no van a cambiar nunca)
+const CACHE_INMUTABLE_NAME = 'imutable-v1';
+
 self.addEventListener('install', event => {
-    // Abrimos el cache para almacenar
-    const cacheProm = caches.open(CACHE_NAME)
+    // Abrimos el cache para almacenar (Aqui guradamos todos los archivos del App Shell para que funcione la app)
+    const cacheProm = caches.open(CACHE_STATIC_NAME)
     .then( cache => {
         // Aqui agregamos todo lo del App shell al Cache
         // retornamos para que se almacene la promesa en la constante
@@ -22,16 +32,25 @@ self.addEventListener('install', event => {
             './index.html',
             './css/style.css',
             './img/main.jpg',
-            // Esto es el CDN del Bootstran
-            'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css',
             './js/app.js'
         ]);
         // Si uno de los archivos no los encuentra nos dara error
     });
 
+    // Implementacion del cache unmutable
+    const cacheInmutable = caches.open(CACHE_INMUTABLE_NAME)
+    .then( cache => {
+        return cache.addAll([
+            // Esto es el CDN del Bootstran
+            'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css',
+        ]);
+    });
+
     // Si podemos leer todo del cache entonces no requerimos llegar a la Web para mostrar la informacion
     // Ademas tenemos que esperar a que toda la promesa de arriba termine para poder continuar con el siguiente paso
-    event.waitUntil( cacheProm );
+    event.waitUntil( 
+        Promise.all([cacheProm, cacheInmutable])
+    );
 });
 
 /*
@@ -68,8 +87,10 @@ self.addEventListener('fetch', event => {
                     // Aqui quiere decir que encontro el archivo
                     // Debemos de hacer que si el cache no encuentra en el cache el archivo vaya siempre a la Red, el chiste es
                     // que depues de obtenerlo de la red lo guarde en el cache para no volver a hacer la peticion
-                    // Abrimos el cache que te tenemos creado
-                    caches.open( CACHE_NAME )
+                    // Aqui almacenaremos contenido dinamico porque este puede crecer un monton ya que cualquier peticion que no este
+                    // en el cache va a pasar por aqui (Tenemos que implementar una estrategia para limpiar constantemente este cache, cosa
+                    // que no hariamos con el statico ni el dinamico), este cache solo se crea cuando se pide un recurse que no existe en el cache
+                    caches.open( CACHE_DYNAMIC_NAME )
                         .then( cache => {
                             // Guardamos en el cache
                             // Le pasamos la reqeuest (Si alguein solocita esto, este nombre es el que tiene que usar) y lo otro es lo que contiene la respuesta
@@ -82,6 +103,7 @@ self.addEventListener('fetch', event => {
         });
         // Cuando probamos, recordemos que en la primera recarga de la pagina se instala el SW con todo los elementos del cache. tenemos que borrar los archivos del cache
         // y volver a recargar la pagina para verificar si esta funcionando la implementacion
+        // Despues de la aplicacion de los otros cache, para probar este cache solo hay que eiminar elementos de los otros caches y cuando se recarge el navegador se creara este cache dinamico
 
     event.respondWith(respCache);
 });
