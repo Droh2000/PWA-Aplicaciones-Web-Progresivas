@@ -2,22 +2,34 @@
 // Detectar cuando no tenemos conexion o la conexion falla
 self.addEventListener('fetch', event => {
 
-    // Creamos una respuesta manual para cuando no hay internet
-    const offlineResp = new Response(`
-        Bienvenido a la pagina web
+   // Ahora vamos a mandar un HTML para que se mire mejor la respuesta
+   /*const offlineResp = new Response(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="X-UA-Compatible" content="ie=edge">
+            <title>Sin conexion</title>
+            
+        </head>
+        <body class="container p-3">
+            <h1>Estas en modo Offline</h1>
+        </body>
+        </html>
+    `, {
+        // Convertimos la respuesta a HTML
+        headers: {
+            'Content-Type':'text/html'
+        }
+    });*/
 
-        Se requiere internet para usarla 
-    `);
+    // Como estamos intentando acceder a un HTML de manera Offline no podemos usar el Fetch ya que por defecto
+    // es una peticion que se van al HTTP con conexion a internet por lo que esto fallaria, para eso estan las estrategias del cache
+    const offlineResp = fetch( './pages/offline.html' );
 
-    // Vamos a hacer que para cada peticion Fetch regrese exactamente el mismo recurso que pide el cliente
-    // pero es el SW el que va a realizar la peticion (En este punto todos los recursos son servidos del SW y es este quien hace la peticion)
     const resp = fetch(event.request)
-    // Si no logra cargar los recursos (Se dispara el catch cuando al accceder al Fetch no se tiene conexion a internet)
-    .catch( () => {
-        // Aqui tenemos que regresar una respuesta
-        return offlineResp;
-    });
-
+    .catch(() => offlineResp);
 
     // Tenemos que regresar una respuesta valida que el navegador pueda interpretar
     event.respondWith( resp );
