@@ -14,11 +14,44 @@
 // Si nos vamos al cache veremos que se nos mezclan cosas importantes del App Shell con recursos dinamicos (Informacion que puede ser obsoleta)
 // Podemos tener diferentes caches para manejarlo mejor (La idea es que tengamos diferentes contenidos)
 // ademas le especificamos versiones porque puede que hagamos un gran cambio que para mantener los otros archivos creamos otro archivo
-const CACHE_STATIC_NAME = 'static-v1';
+const CACHE_STATIC_NAME = 'static-v2';
 const CACHE_DYNAMIC_NAME = 'dynamic-v1';
 // Podemos considerar el cache inmutable (En este se meteria por ejemplo los del boostrap, ya que como estos archivo no van a cambiar nunca)
 const CACHE_INMUTABLE_NAME = 'imutable-v1';
 
+// Tenemos que ser optimos manejando el Cache, supongamos que solo queremos limitar a 5 archivos en el cache Dinamico y que los demas
+// que los sirva por la Web, cada navegador tiene un espacio limitado y en la version de celulares mas
+// Hacemos que esta funcion funcione para cualquier cache, luego le especificamos cuando items queremos mantener en el cache
+const limpiarCache = ( cacheName, numeroItems ) => {
+    // Primero tenemos que abrir el cache para ver que hay adentro
+    caches.open( cacheName )
+        .then(  cache => {
+            // Recorremos todos los eleemntos que esten dentro de ese cache
+            // Aqui mismo vamos a requerir leer el cache por eso hacemos todo en la misma funcion
+            cache.keys()
+            .then( keys => {
+                // Estos Keys serian cada uno de los elementos que estan almacenados dentro del cache en forma de Request donde se ubican los archivos
+                //  console.log(keys);
+
+                // Verificamos si ya alcamos el limite de archivos
+                if( keys.length > numeroItems ){
+                    // Aqui tenemos que borrar algo, sabemos que tenemos elementos en el cache, ademas vamos a hacer que se eliminen de forma recursiva
+                    // los elementos que excedan esa cantidada, eliminando todo la pocion 0 hasta que ya no se cumpla la condicion
+                    cache.delete( keys[0] )
+                    .then( limpiarCache(cacheName, numeroItems) );
+                }
+            });
+        });
+    // Para probar esta funcion tenemos que despues de recargar el navegador, ir al cache donde se implemento la funcion y borrar todos sis elementos
+    // despues de volver a recargar el navegador, se ejecutara la funcion
+}
+
+
+// Para actualizar este cache tenemos que volver a ejecutar la instalacion, de manera rapida subirmos la version del cache
+// lo que hara un cambio en general del SW, PERO Seguiremos sin ver los cambios en la pagina, podremos recargar la pagina, precionar el SkipWaiting pero no funcionara
+// Esto pasa porque al cambiar de version tenemos dos caches "static-v1" y el "static-v2" y en los dos existe un Index.html, esto el navegar lo interpreta que cuando va 
+// al metodo del "caches.match" de la estrategia "Cache With Network Faillback" le decimos que no importa en cual cache busque, que obtenga los archivos, solo eso 
+// Asi que tenemos que elimina el cache viejo "static-v1" y al recargar ya veremos la imagenes
 self.addEventListener('install', event => {
     // Abrimos el cache para almacenar (Aqui guradamos todos los archivos del App Shell para que funcione la app)
     const cacheProm = caches.open(CACHE_STATIC_NAME)
@@ -76,6 +109,7 @@ self.addEventListener('fetch', event => {
     // Cache With Network Fallback
     // Aqui intenta primero el cache y despues si no encuentra el archivo en el cache va a ir a la Web
     // Primero tenemos que verificar si el archivo o el request existe en el cache
+    // Esto solo se actualizar si no existe en el cache el archivo 
     const respCache = caches.match( event.request )
         .then( res => {
             // Evaluar si existe el archivo (400 no los atrapa el Catch)
@@ -95,6 +129,10 @@ self.addEventListener('fetch', event => {
                             // Guardamos en el cache
                             // Le pasamos la reqeuest (Si alguein solocita esto, este nombre es el que tiene que usar) y lo otro es lo que contiene la respuesta
                             cache.put( event.request, newResp );
+
+                            // Un buen lugar para poner la funcion de limpieza es cuando estamos guardando en el cache
+                            // Despues de poner el registro nuevo vamos a limpiar y limitar el cache a 5 elementos
+                            limpiarCache( CACHE_DYNAMIC_NAME, 5);
                         });
 
                     // Si no la clonamos nos dara error porque la respuesta la estamos usando dos veses que es arriba y aqui abajo 
