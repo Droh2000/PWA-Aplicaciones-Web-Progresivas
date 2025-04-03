@@ -18,6 +18,7 @@ const CACHE_STATIC_NAME = 'static-v2';
 const CACHE_DYNAMIC_NAME = 'dynamic-v1';
 // Podemos considerar el cache inmutable (En este se meteria por ejemplo los del boostrap, ya que como estos archivo no van a cambiar nunca)
 const CACHE_INMUTABLE_NAME = 'imutable-v1';
+const CACHE_DYNAMYC_LIMIT = 50;
 
 // Tenemos que ser optimos manejando el Cache, supongamos que solo queremos limitar a 5 archivos en el cache Dinamico y que los demas
 // que los sirva por la Web, cada navegador tiene un espacio limitado y en la version de celulares mas
@@ -110,7 +111,7 @@ self.addEventListener('fetch', event => {
     // Aqui intenta primero el cache y despues si no encuentra el archivo en el cache va a ir a la Web
     // Primero tenemos que verificar si el archivo o el request existe en el cache
     // Esto solo se actualizar si no existe en el cache el archivo 
-    const respCache = caches.match( event.request )
+    /*const respCache = caches.match( event.request )
         .then( res => {
             // Evaluar si existe el archivo (400 no los atrapa el Catch)
             if( res ) return res;// Si existe la respuesta esa es la enviamos
@@ -142,7 +143,40 @@ self.addEventListener('fetch', event => {
         // Cuando probamos, recordemos que en la primera recarga de la pagina se instala el SW con todo los elementos del cache. tenemos que borrar los archivos del cache
         // y volver a recargar la pagina para verificar si esta funcionando la implementacion
         // Despues de la aplicacion de los otros cache, para probar este cache solo hay que eiminar elementos de los otros caches y cuando se recarge el navegador se creara este cache dinamico
+    */
 
+    // Cache Network With Cache Fallback
+    // Primero vaya a internet, que intenten obtener el recurso y si lo obtiene que lo muestre, si no lo obtiene que vaya al cache haber si existe
+    const respCache = fetch( event.request ).then( res => {
+        // Para probar este console, vayamos al index y pongamos un archivo que no exista
+        // Veremos que en la consola nos da 404, esto lo tenemos que pregnutar con el IF (Si la respuesta no existe que intente leerlo del cache)
+        if( !res ) return caches.match( event.request );
+        // console.log('Fetch', res);
+        // Para una imagen que no exista podriamos mandar un recurso por defecto
+
+        caches.open( CACHE_DYNAMIC_NAME )
+        .then( cache => {
+            // Aqui obtenemos el recurso entonces lo almacenamos en el cache
+            cache.put( event.request );
+
+            // Para que el cache no cresca descrontoladamente
+            limpiarCache( CACHE_DYNAMIC_NAME, CACHE_DYNAMYC_LIMIT);
+        });
+        // Esta es la respuesta que mostramos si la encuentra
+        return res.clone();
+    })
+    // Para el caso que el usuario no tenga conexion a internet, solo nos toca revisar si existe en el cache
+    .catch( err => {
+        // Si existe algo en el cache que haga match con la peticion que le estamos mandando
+        return caches.match( event.request );
+    });
+    // Si nos vamos a la pestana de Network y vemos en la tabla en la columna de "Initiar" para ver cuando el SW realiza la peticion
+    // si vemos que en la columna "Size" hay un peso quiere decir que se fue a la Web y consiguio la descarga
+    // Despues aparecen los mismos recursos pero ahora desde el SW esto es porque aqui pusimos que el SW es el que hace el fetch y el SW es
+    // el que le responde al navegador con la respueta de abajo
+    // Problemas que tiene esta estrategia es que cuando estamos en un dispositivo movil SIEMPRE va a intentar traer la informacon mas actualizada y esto conlleva
+    // a que al hacer siempre el Fetch siempre consume datos y ademas esta estrategia es mas lenta que el Cache First
+    // En esta estrategia siempre tiene que hacer una descarga
     event.respondWith(respCache);
 });
 
