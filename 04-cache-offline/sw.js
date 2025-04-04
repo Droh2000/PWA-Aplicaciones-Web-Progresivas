@@ -147,7 +147,7 @@ self.addEventListener('fetch', event => {
 
     // Cache Network With Cache Fallback
     // Primero vaya a internet, que intenten obtener el recurso y si lo obtiene que lo muestre, si no lo obtiene que vaya al cache haber si existe
-    const respCache = fetch( event.request ).then( res => {
+    /*const respCache = fetch( event.request ).then( res => {
         // Para probar este console, vayamos al index y pongamos un archivo que no exista
         // Veremos que en la consola nos da 404, esto lo tenemos que pregnutar con el IF (Si la respuesta no existe que intente leerlo del cache)
         if( !res ) return caches.match( event.request );
@@ -177,6 +177,44 @@ self.addEventListener('fetch', event => {
     // Problemas que tiene esta estrategia es que cuando estamos en un dispositivo movil SIEMPRE va a intentar traer la informacon mas actualizada y esto conlleva
     // a que al hacer siempre el Fetch siempre consume datos y ademas esta estrategia es mas lenta que el Cache First
     // En esta estrategia siempre tiene que hacer una descarga
+    event.respondWith(respCache);*/
+
+    // Cache With Network Update
+    // Esto es cuando nuestro rendimiento es critico y necesitamos que aparesca lo mas rapido en nuestra aplicacion y tambien nos interesan las actualizaciones pero 
+    // estas siempre estaran una version atras de la version que tenga el navegador web
+    // Si por ejemplo modificamos el indez y ocultamos los SRC de las imagenes, si recaargaramos el navegador web, este nos mostraria la pagina exactamente como estaba antes 
+    // porque esta en el cache pero una vez que se hace la peticion al recurso, nosotros hacemos una actualizacion en el background para que cuando el usuario vuelva a consular 
+    // la pagina vuelva a tener la nueva version, sin hacer modificaciones en el SW
+    // Como el Boostrap lo estamos tomando de otro cache empleamos esta condicion porque sino no lo estariamos tomando
+    if(event.request.url.includes('bootstrap')) {
+        return event.respondWith( caches.match( event.request ));
+    }
+
+    // Como el rendimiento es critico vamos a trabajar unicamente con la informacion que esta en el cache que no cambia
+    const respCache =caches.open( CACHE_STATIC_NAME ).then( cache => {
+        // En esta estrategia todo lo que se requiere esta en el cache, no tenemos nada dinamico
+        // Con fetch vamos a internet donde esta la informacion y obtenga, esa nueva respuesta
+        fetch( event.request ).then( newRes => {
+            // Actualizamos el cache metiendole la nueva informacion 
+            cache.put( event.request, newRes );
+        }); 
+        // Regresamos lo que coincida en el cache para que eso sea lo que se implemente
+        return cache.match( event.request );
+    });
+    /*
+        En este caso hizimos que busque el cache con el nombre de "CACHE_STATIC_NAME", cuando se abra
+        le decimos que nos regrese lo que coincida con la peticion que nos esta pidiendo el usuario
+        A su vez ejecutamos el Fetch para obtener la ultima version que se encuentra en el lugar donde
+        estamos sirviendo la aplicacion, esto lo almacenamos en el cache
+        Se almacena ahi pero es servida la version que teniamos en el cache originalmente
+        (La peticion del Fetch se va a hacer despues del RETURN porque en este caso es mas lentos que 
+        solo leer el cache y retornarlo)
+
+        Para ver el funcionamiento del cache
+        Modifiquemos el index.html, al recargar el navegador veremos que no salen los cambios porque nuestro cache no cambio
+        Lo que hizo en la recarga del navegador fue traer los datos del cache porque es mas rapido pero tambien actualiza el cache
+        por eso si actualizamos nuevamente el sitio, esta vez si veremos los cambios
+    */
     event.respondWith(respCache);
 });
 
