@@ -66,7 +66,8 @@ self.addEventListener('install', event => {
             './index.html',
             './css/style.css',
             './img/main.jpg',
-            './js/app.js'
+            './js/app.js',
+            './img/no-img.jpg',
         ]);
         // Si uno de los archivos no los encuentra nos dara error
     });
@@ -186,7 +187,7 @@ self.addEventListener('fetch', event => {
     // porque esta en el cache pero una vez que se hace la peticion al recurso, nosotros hacemos una actualizacion en el background para que cuando el usuario vuelva a consular 
     // la pagina vuelva a tener la nueva version, sin hacer modificaciones en el SW
     // Como el Boostrap lo estamos tomando de otro cache empleamos esta condicion porque sino no lo estariamos tomando
-    if(event.request.url.includes('bootstrap')) {
+    /*if(event.request.url.includes('bootstrap')) {
         return event.respondWith( caches.match( event.request ));
     }
 
@@ -200,7 +201,7 @@ self.addEventListener('fetch', event => {
         }); 
         // Regresamos lo que coincida en el cache para que eso sea lo que se implemente
         return cache.match( event.request );
-    });
+    });*/
     /*
         En este caso hizimos que busque el cache con el nombre de "CACHE_STATIC_NAME", cuando se abra
         le decimos que nos regrese lo que coincida con la peticion que nos esta pidiendo el usuario
@@ -215,6 +216,67 @@ self.addEventListener('fetch', event => {
         Lo que hizo en la recarga del navegador fue traer los datos del cache porque es mas rapido pero tambien actualiza el cache
         por eso si actualizamos nuevamente el sitio, esta vez si veremos los cambios
     */
+    //  event.respondWith(respCache);
+
+    // Cache y Network Race
+    // Este es como una competencia para ver cual de los dos responde primero, asi le daremos al usuario la respuesta mas rapida en 
+    // alguna de estas peticiones
+    // Nos creamos una promesa que se encarge de hacer esto simultaneamente
+    const respCache = new Promise( (resolve, reject) => {
+        // Bandera para saber cual de las dos fue rechazada
+        let rechazada = false;
+
+        const falloUnaVez = () => {
+            // Evaluamos si la peticion fue rechazada
+            if( rechazada ){
+                // En esta parte quiere decir que no existe en el cache ni exte una peticion valida del Fetch
+                // Lo que se hace varia, si fuera una imagen la fallenta podemos retornar una imagen por defecto
+                // Aqui le pasamos un expreccion regular
+                if(/\.(png|jpg)$/i.test( event.request.url )){
+                    resolve( caches.match('/img/no-image.jpg') );
+                }else{
+                    reject('No se encontro respuesta');
+                }
+            }else{
+                // Si no ah sido rechazada quiere decir que fue la primera que fallo
+                rechazada = true;
+            }
+
+            // Veamos la logica:
+            // Supongamos que el Fetch falla primero y entra al codigo de esta funcion, como al inicio la bandera vale False
+            // entonces entra al ELSE, pero el cache todavia no ah respondido 
+            // Si el cache falla tambien entra a esta funcion y como la bandera ya esta true entra dentro del IF
+        }
+
+        // Ponemos a competir el cache y network haber cual de las dos se hace primero
+        fetch( event.request ).then( res => {
+            if( res.ok ){
+                // Regresamos la repuesta obtenida
+                resolve(res);
+            }else{
+                // Si no logra resolver llamamos la funcion de fallo (Puede que el recurso no se encontre)
+                falloUnaVez();
+            }
+        })
+        // Si no tenemos conexion a internet, se va a disparar el catch
+        .catch( falloUnaVez ); // No le ponemos los parentesis para que ejecute la funcion loluego
+
+        // Buscamos la respuesta en el cache
+        caches.match( event.request ).then( res => {
+            // Si la encontramos la regresamos
+            if( res ){
+                resolve(res);
+            }else{
+                // Si no obtenemos la repuesta
+                falloUnaVez();
+            }
+        });
+    }).catch( falloUnaVez );
+
+    // Para provar esta estratiegia
+    // Vamonos a la pestana Cache Storage -> staticv2 y eliminamos la imagen para que entre al IF de la funcion de fallo y nos ponga
+    // la imagen por defecto porque ya no existe la imagen, recargamos el navegador y nos sale la imagen
+    // Debemos estar en modo offline para ver esto
     event.respondWith(respCache);
 });
 
