@@ -10,7 +10,8 @@ const INMUTABLE_CACHE = 'inmutable-v1';
 // Algunas cosas quesan a consideracion nuestra pero si todo lo es librerias de terceros tenemos el cache inmutable
 // Este es el corazon de la aplicacion
 const APP_SHELL = [
-    '/',
+    // '/', // Esta linea se comenta en produccion
+    // Para que funcione en Github nada debe de empezar con el slash
     'index.html',
     'css/style.css',
     'img/favicon.ico',

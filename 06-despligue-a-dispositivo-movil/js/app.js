@@ -1,7 +1,16 @@
+// Para cuando subamos a github pages no nos de error por el cambio de la ruta
+// Primero detectamos si estamos en localhosto o desarrollo
+const url = window.location.href;
+// Aqui entre comillas seria el nombre del respositorio que le dariamos
+let swLocation = '/NAME_REPOSITORY/sw.js';
 
 // Registramos el SW en la aplicacion
 if( navigator.serviceWorker ){
-    navigator.serviceWorker.register('/sw.js');
+    if(url.includes('localhost')){
+        swLocation = '/sw.js';
+    }
+
+    navigator.serviceWorker.register(swLocation);
 }
 
 // Referencias de jQuery

@@ -32,7 +32,17 @@ Archivo Manifest
                 Pero esto no se mostrara de la mejor forma, porque pareciera que es solo una pagina que abre el Chrome
                 tenemos que correr esto en un servidor HTTPS para verlo como si fuera una App del celular
 
-                
+            Para ver bien la aplicacion debemos desplegarla en un dominio HTTPS, en este caso sera Github Pages
+                * Subimos la aplicacion a un repositorio de Github
+                * Settings -> Abajo en Github Pages -> Seleccionamos master branch -> Guardamos
+                * Recargamos la pagina hasta que nos del link en este mismo apartado
+                * Cuando entremos veremso en la consola un error que fallo el SW
+                    Esto es porque en el archivo "app.js" en donde registramos el SW le decimos que esta en la Raiz pero al subirlo a github cambia la ruta
+                    la raiz seria la URL que nos da Githubs
+                    (Subimos la logica cambiada en los archivos)
+
+            
+
         
 
         
