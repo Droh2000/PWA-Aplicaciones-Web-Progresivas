@@ -2,8 +2,8 @@
 importScripts("js/sw-utils.js"); // Solo funciono con esta importacion
 
 // Creamos el nombre y los tipos de caches que queremos usar
-const STATIC_CACHE = 'static-v1';
-const DYNAMIC_CACHE = 'dynamic-v1';
+const STATIC_CACHE = 'static-v1'; // Si estamos haciendo pruebas con celulares, subimos de version el cache para que haga la nueva instalacion y tome los nuevos archivos
+const DYNAMIC_CACHE = 'dynamic-v1'; // Igual este se sube de version para que tome los cambios
 const INMUTABLE_CACHE = 'inmutable-v1';
 
 // Definimos los archivos importantes para que la aplicacion funcione
@@ -53,6 +53,10 @@ self.addEventListener('activate', event => {
     const respuesta = caches.keys().then( keys => {
         keys.forEach( key => {
             if (  key !== STATIC_CACHE && key.includes('static') ) {
+                return caches.delete(key);
+            }
+            // Para que cuando se hace la instalacion, tambien actualize el cache dinamico
+            if (  key !== DYNAMIC_CACHE && key.includes('dynamic') ) {
                 return caches.delete(key);
             }
         });
