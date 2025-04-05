@@ -41,7 +41,14 @@ Archivo Manifest
                     la raiz seria la URL que nos da Githubs
                     (Subimos la logica cambiada en los archivos)
 
-            
+    Audits (Debemos de tener conectado el celular y abrirlo en el navegador de la PC usando el de celular como se dice arriba)
+        Esta es una herramienta que viene en el navegador que se usa para que nos evalue que tan bien esta nuestra PWA creada
+        Nos vamos al menu donde abrimos la consola, seleccionamos los 3 puntos, seleccionamos dentro las opciones, Quitamos la de SEO
+        Luego precionamos el boton de Run Audits, esto nos dara estadisticas de performance y otoras cosas, con que nos de arriba de 70% esta bien
+
+        Abajo nos da consejos, unos para mejorar el rendimiento borrando recursos u optimizando estos recursos (CDD, Librerias, JS, etc)
+
+        Nos da en el apartado del diagnostico, problemas que pueden ocurrir en la interfaz por como la implementamos
 
         
 
