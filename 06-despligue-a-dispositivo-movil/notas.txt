@@ -12,4 +12,30 @@ Archivo Manifest
 
     Despues de las implementacion debemos de recargar el navegador y ahora en la pestana de Application
     en la opcion de Manifest obtener toda la configuracion que establecimos
+
+    Depurar y Correr en el Dispositivo Mobil
+
+        Ya conectado y configurado en la PC, dentro de la pagina en el navegador de la PC, en el apartado
+        donde abrimos la consola tenemos en la esquina tres puntos, ahi -> More Tools -> Remote Devices
+        Settings -> Aqui dentro seleccionamos los dos checks de Discover por USB y Port Forwarding, luego
+        damos click en Add roule, agregamos el puerto en el que estemos corriendo la APP y al lado escribimos
+        "localhost:8080" y le damos a ADD, despues ya nos debe aparecer el dispositivo, entrando a ese apartado
+        dentro tenems un campo donde escribimos la direccion localhost:8080 y tocamos Open
+            Ahi ya se nos abre la pagina en el navegador
+        Para acceder a las mismas opciones del Chrome Mobil en la PC (Dentro del mismo apartado) tenemos el boton de "inspect"
+        Que seria el boton que esta al lado del nombre de la aplicacion porque nos salen dos
+            Esto nos abre el navegador en una nueva pantalla que seria el Chrome Movil pero en la PC y todo lo que hagamos ahi
+            afectara en el celular
+
+            Aqui tenemos la opcion de Add to Homescreen
+                Esto nos agrega en la pantalla la pagina en el menu del celular como si fuera una aplicacion
+                Pero esto no se mostrara de la mejor forma, porque pareciera que es solo una pagina que abre el Chrome
+                tenemos que correr esto en un servidor HTTPS para verlo como si fuera una App del celular
+
+                
+        
+
+        
+
+
     
