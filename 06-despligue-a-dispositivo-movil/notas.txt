@@ -1,0 +1,15 @@
+Archivo Manifest
+
+    Aqui especificamos como queremos que nuestra aplicacion se mire
+    Una vez implementado debemos de hacer la referencia en el Index.html
+    y si tenemos mas paginas, se debe de colocar en cada una de ellas
+    Podemos configurar dentro del manifest el inicio de la pagina
+        Es importante que en las rutas nunca les agreamos el slash '/' al inicio, porque cuando despleguemos 
+        la aplicacion esto nos dara error
+    Le especimos iconos en diferentes dimenciones y el color de fondo
+    En la propiedad del "display" le pusimos "standalone" para que se muestre arriba de la aplicacion la URL
+    sino con otra opcion podemos decirle ahi que la oculte
+
+    Despues de las implementacion debemos de recargar el navegador y ahora en la pestana de Application
+    en la opcion de Manifest obtener toda la configuracion que establecimos
+    
