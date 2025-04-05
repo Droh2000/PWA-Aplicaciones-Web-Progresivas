@@ -1,3 +1,6 @@
+//import { actualizaCacheDinamico } from "./js/sw-utils";
+importScripts("js/sw-utils.js"); // Solo funciono con esta importacion
+
 // Creamos el nombre y los tipos de caches que queremos usar
 const STATIC_CACHE = 'static-v1';
 const DYNAMIC_CACHE = 'dynamic-v1';
@@ -16,7 +19,9 @@ const APP_SHELL = [
     'img/avatars/spiderman.jpg',
     'img/avatars/thor.jpg',
     'img/avatars/wolverine.jpg',
-    'js/app.js'
+    'js/app.js',
+    // El archivo es importante para que funcione correctamente la app
+    'js/sw-utils.js',
 ]
 
 // Estos son los recursos que no se van a modificar jamas
@@ -52,4 +57,30 @@ self.addEventListener('activate', event => {
         });
     });
     event.waitUntil( respuesta );
+});
+
+// Implementar la estrategia del cache
+self.addEventListener('fetch', event => {
+
+    //1.- Cache Only
+    // Tenemos que verificar en el cache si existe el elemento que vieja en la request
+    const respCache = caches.match( event.request ).then( res => {
+        // Si existe la respuesta, regresa la respuesta
+        if( res ){
+            return res;
+        }else{
+            // Si no existe la respuesta
+            // Si la respuesta no se encuentra, esto nos regresa undefined y nos dara error
+            //      console.log(event.request.url)
+            // Si nos da error es porque de las CDN hace una peticion a otra pagina que les brinda el recurso, como el de las fuentes
+            // Internamente hace una solicitud a otra direccion diferente que la que especificamos, por eso no encuentra ningnu match
+            // Esta peticion la tenemos que guardar en el cache dinamico
+            return fetch( event.request ).then( newRes => {
+                // Para que el codigo no cresca mucho separamos la logica en modulos
+                return actualizaCacheDinamico( DYNAMIC_CACHE, event.request, newRes );
+            });
+        }
+    });
+
+    event.respondWith( respCache );
 });
