@@ -2,6 +2,11 @@
 
   'use strict';
 
+  // Instalamos el SW para convertir nuestra aplicacion en SW
+  if(navigator.serviceWorker){
+    navigator.serviceWorker.register('/sw.js');
+  }
+
   var ENTER_KEY = 13;
   var newTodoDom = document.getElementById('new-todo');
   var syncDom = document.getElementById('sync-wrapper');
