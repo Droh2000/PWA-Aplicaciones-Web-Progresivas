@@ -1,0 +1,7 @@
+Para no seguir usando indexdb con js puro, vamos  usar la libreria de PouchDb
+esta es una BD de JS que nos va a permitir poder grabar informacion inclusive cuando no tenemos conexion a internet
+para que despues se sincronize automaticamente cuando se recupere la conexion
+
+Empezar:
+    * Se descarga el archivo de inicio de la pagina oficial llamado "puchdb-getting-started-todo.zip"
+    
