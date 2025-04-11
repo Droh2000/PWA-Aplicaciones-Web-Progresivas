@@ -28,6 +28,49 @@ request.onupgradeneeded = event => {
 // ya se habia creado la BD, asi que para ver la ejecucion tenemos que subir de version o eliminarla dentro del navegador
 }
 
+// Manejo de errores (Esto se ejecutara cuando ocurra un error)
+request.onerror = event => {
+    console.log('Db error', event.target.error );
+}
 
+// Insertar Datos
+request.onsuccess = event => {
+    let db = event.target.result; // Referencia a la base de datos
+    
+    // Informacion que queremos meter a la BD local
+    let heroesData = [
+        {id: '1111', heroe: 'Spiderman', mensaje: 'Aqui su amigo arana'},
+        {id: '2222', heroe: 'Ironman', mensaje: 'Aqui cagando en el bano'},
+    ];
+
+    // Para guardar nos tenemos que crear una transaccion
+    // Como argumentos le mandamos el lugar donde queremos guardar, luego tenemos que especificar si la transaccion es de lectura o lectura y escritura
+    // (Si solo queremos leerlo seria "readonly")
+    let heroesTransaction = db.transaction('heroes', 'readwrite');
+
+    // Como podria fallar hay que manejar el error
+    heroesTransaction.onerror = event => {
+        console.log('Error Guardando', event.target.error);
+    }
+
+    // Si la transaccion se hace correctamente
+    heroesTransaction.oncomplete = event => {
+        console.log('Transaccion Hecha', event);
+    }
+
+    // Requerimos un objeto de esa transaccion (Este es el lugar donde vamos a almacenar)
+    let heroesStore = heroesTransaction.objectStore('heroes');
+
+    // Recorremos el arreglo para insertar sus registros uno por uno
+    for ( let heroe of heroesData ){
+        heroesStore.add( heroe );
+    }
+
+    // Si la inserccion se hizo correctamente
+    heroesStore.onsuccess = event => {
+        console.log('Nuevo item agregado a la base de datos');
+    }
+    // Para ver los datos nos vamos a la pestana de Application -> IndexDB -> BD -> heroes
+}   
 
 
