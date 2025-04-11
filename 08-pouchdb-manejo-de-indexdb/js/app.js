@@ -21,6 +21,9 @@
 
   // We have to create a new todo document and enter it in the database
   function addTodo(text) {
+    // Si el texto que recibe en la caja de texto esta vacio, que no haga nada para que no agrege campos vacios
+    if( text.length <= 0 ) return;
+
     // Esto es para escribir en la BD
     // En PouchDB es obligatorio que los objetos tengan el "_id"
     var todo = {
@@ -59,15 +62,29 @@
   }
 
   function checkboxChanged(todo, event) {
+    // Actualizar un registro en la BD
+    todo.completed = event.target.checked;
+    db.put(todo).then(console.log('Registro Actualizado'));
   }
 
   // User pressed the delete button for a todo, delete it
   function deleteButtonPressed(todo) {
+    // Eliminar
+    db.remove(todo);
   }
 
   // The input box when editing a todo has blurred, we should save
   // the new title or delete the todo if the title is empty
   function todoBlurred(todo, event) {
+    // Esta funcion es por si se hace algun cambio en el Todo
+    var trimmedText = event.target.value.trim(); // Verifica que haya informacion dentro del campo de texto
+    if( !trimmedText ){
+      db.remove(todo); // Si no hay cambio borra
+    }else{
+      // Actualiza el titulo y hace el Put
+      todo.title = trimmedText;
+      db.put(todo);
+    }
   }
 
   // Initialise a sync with the remote server
