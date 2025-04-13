@@ -10,3 +10,6 @@ donde todos los Inmutables los hacemos referencias de CDN
 
 Para ejecutar el comando NPM:
     - npm run dev
+
+Esta es una dependencia para que Node pueda leer lo que vamos a Postear en el Body y poderlo trabajar de una manera mas facil
+    * npm install body-parser --save

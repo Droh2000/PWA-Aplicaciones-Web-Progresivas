@@ -19,7 +19,22 @@ router.get('/', function (req, res) {
   res.json( mensajes );
 });
 
+// Para hacer una peticion POST
+router.post('/', function (req, res) {
 
+  // Aqui usamos el Body Parser que instalamos
+  const mensaje = {
+    mensaje: req.body.mensaje,
+    user: req.body.user
+  }
 
+  // Agregamos al arreglo de mesnajes el nuevo mensaje
+  mensaje.push( mensaje );
+
+  res.json({
+    ok: true,
+    mensaje
+  });
+});
 
 module.exports = router;
