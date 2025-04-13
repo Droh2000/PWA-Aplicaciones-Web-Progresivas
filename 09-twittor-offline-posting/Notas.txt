@@ -1,0 +1,12 @@
+
+Vamos a aprender a manejar las peticiones HTTP de manera Offline y cuando la conexion
+se restablesca, esta peticiones se ejecuten  
+
+Aqui nos creamos un servidor HTTP en Node para probar las peticiones
+
+En la carpeta publica tenemos la misma aplicacion de Twittor que habiamos visto con un par de cambios
+por ejemplo en el "app.js" donde solo se corrigio un pequeno error, hay otro cambio en el "sw.js"
+donde todos los Inmutables los hacemos referencias de CDN
+
+Para ejecutar el comando NPM:
+    - npm run dev
