@@ -90,6 +90,7 @@ self.addEventListener( 'fetch', e => {
     // Ponemos "/api" y no la palabra "api" porque podria detectar los CDN que tambien incluyen esa palabra
     if( e.request.url.includes('/api') ){
         // La implementacion del Network With Cache Callback lo implementamos aqui
+        // Aqui recibimos si el Posteo se realizo de manera Offline
         respuesta = manejoApiMensajes( DYNAMIC_CACHE, e.request );
     }else{
         respuesta = caches.match( e.request ).then( res => {
@@ -117,4 +118,17 @@ self.addEventListener( 'fetch', e => {
     e.respondWith( respuesta );
 });
 
+// Registramos la tarea Asyncrona
+self.addEventListener('sync', e => {
+    console.log('SW: Sync');
 
+    // Como podemos tener varias acciones asincronas y les podemos dar varios tratamientos independientes segun el tratamiento
+    if( e.tag === 'nuevo-post' ){ // Verificamos cual fue la tarea registrada (El tag que especificamos nosotros fue "nuevo-post")
+        // Postear a BD cuando hay conexion
+
+        // Esperamos hasta que se termine para pasar a la siguiente accion
+    }
+});
+// Podemos hacer la prueba cerrando el Servicio de Node y apagando la conexion
+// Creamos un nuevo mensaje desde el Fronted para hacer un Posteo, veremos en consola el mensaje que pusimos en el app.js
+// En el momento que tengamos conexion a internet y levantado el servidor, se ejecuta este evento de arriba
