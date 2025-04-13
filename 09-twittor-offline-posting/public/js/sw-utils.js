@@ -48,6 +48,14 @@ function manejoApiMensajes( cacheName, req ) {
     if( req.clone().method === 'POST' ){
         // POSTEO de un nuevo mensaje no podemos retornar directamente con un Fetch porque lo estamos dejando pasar directamente es como si no hicieramos nada
         // esto seria igual a la estrategia de solamente Network porque las peticiones pasarian normal 
+        // Si hay conexion lo ideal es que se ejecute la peticion inmediatamente pero si no hay conexion entonces lo almacenaremos en la BD para que cuando haya conexion se ejecute
+        // Para interceptar esta peticion como es una promesa no podemos igualarlo a una variable
+        req.clone().text().then( body => {
+            // Aqui podemos leer y obtener el objeto POST (Esto lo vamos a almacenar en IndexDB)
+            // Le pasamos la repuesta string y la convertimos a JSON para recuperar sus propiedades y tambien poder agregarle propiedades  
+            const bodyObj = JSON.parse( bosy );
+            guardarMensaje( bodyObj );
+        });// Como no tenemos que esperar a que se resuleva esta peticion para retornar el Fetch, no nos preocupamos que se ejecute primero el Fetch de abajo
 
         // Si revisamos en el Cache Storage -> en el Static y en el archivo de sw-utils veremos que no tenemos esta parte de codigo que escribimos
         // Como este no es el archivo del SW, el navegador no reinstala los cambios, una solucion es subir de version el cache Static en el SW       

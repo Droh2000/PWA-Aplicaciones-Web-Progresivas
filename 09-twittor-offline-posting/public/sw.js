@@ -1,4 +1,9 @@
 // imports
+// La libreria de PouchDB deberia de colocarse en el Index.html, eso seria si fueramos a trabajar en el App.js pero el SW corre en su instancia
+// totalmente separada e independiente al codigo de la aplicacion, asi que agregamos la referencia de la libreria aqui
+// Cuando el SW se intala va a leer esta instancia 
+importScripts('https//cdn.jsdelivr.net/npm/pouchdb@7.0.0/dist/pouchdb.min.js');
+importScripts('js/sw-db.js'); // ES importante que este archivo se primero el importado porque el de abajo deoende del de arriba
 importScripts('js/sw-utils.js');
 
 
@@ -26,7 +31,8 @@ const APP_SHELL_INMUTABLE = [
     'https://fonts.googleapis.com/css?family=Lato:400,300',
     'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
     'https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css',
-    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'
+    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js',
+    'https//cdn.jsdelivr.net/npm/pouchdb@7.0.0/dist/pouchdb.min.js'
 ];
 
 
