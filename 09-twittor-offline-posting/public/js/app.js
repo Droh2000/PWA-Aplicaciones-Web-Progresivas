@@ -192,3 +192,33 @@ function getMensajes(){
 // Como este es el archivo leido la primera vez, requerimos que se lea esta funcion lo luego
 // para obtener los mensajes
 getMensajes();
+
+// Detectar cambios de conexion (Asi despues le podemos mostrar al usuario del lado del Fronted si tiene o no conexion)
+function isOnline(){
+    // Preguntamos si el navegador tiene conexion a internet
+    if( navigator.onLine ){
+        //console.log('Online');
+
+        // Usamos la libreria que importamos
+        $.mdtoast('Online', {
+            interaction: true,
+            interactionTimeout: 1000,
+            actionText: 'Ok!'
+        });
+    }else{
+        //console.log('Offline');
+        $.mdtoast('Offline', {
+            interaction: true,
+            // Para que el usuario haga click para asegurarnos que sepa que esta sin conexion
+            actionText: 'Ok',
+            type: 'warning'
+        });
+    }
+}
+
+// Creamos los Listeners en el Window Para saber cuando disparar la funcion de arriba
+window.addEventListener('online', isOnline);
+window.addEventListener('offline', isOnline);
+
+// La ponemos aqui para estar seguro que siempre se dipare la funcion
+isOnline();
