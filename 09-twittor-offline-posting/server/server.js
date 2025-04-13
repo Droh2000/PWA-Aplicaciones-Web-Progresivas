@@ -15,6 +15,7 @@ app.use(express.static(publicPath));
 // Rutas 
 // Esta es la configuracion de rutas que tenemos en el archivo "routes"
 const routes = require('./routes');
+// Para acceder a los Endopints se iniciaran con el /api
 app.use('/api', routes );
 
 
