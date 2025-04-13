@@ -31,6 +31,9 @@ router.post('/', function (req, res) {
   // Agregamos al arreglo de mesnajes el nuevo mensaje
   mensaje.push( mensaje );
 
+  // Vamos a ver esto cuando hacemos el posteo Offline
+  console.log(mensaje);
+
   res.json({
     ok: true,
     mensaje

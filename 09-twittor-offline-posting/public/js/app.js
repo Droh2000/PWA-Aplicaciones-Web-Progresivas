@@ -133,12 +133,33 @@ cancelarBtn.on('click', function() {
 
 // Boton de enviar mensaje
 postBtn.on('click', function() {
-
+    // Toma la caja de texto y de ahi envia el mensaje
     var mensaje = txtMensaje.val();
     if ( mensaje.length === 0 ) {
         cancelarBtn.click();
         return;
     }
+    // El usuario lo estamos tomando el Index en la parte donde se nos muestra cada uno de los personajes, esos serian los usuarios
+    // En este punto sabemos que existe un usuario y un mensaje
+    // Para hacer la peticion Post
+    const data = {
+        mensaje: mensaje,
+        user: usuario
+    };
+
+    fetch('api', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        // Estos son los datos que tenemos que enviar
+        body: JSON.stringify( data )
+    })
+    // Extraemos la respuesta
+    .then( res => res.json() )
+    // Esto es lo que queremos hacer con la respuesta
+    .then( res => console.log( 'app.json', res ))
+    .catch( err => console.log( 'app.json error: ', err));
 
     crearMensajeHTML( mensaje, usuario );
 
