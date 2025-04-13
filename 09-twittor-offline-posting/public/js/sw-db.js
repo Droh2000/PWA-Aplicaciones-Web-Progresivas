@@ -31,6 +31,43 @@ function guardarMensaje( mensaje ){
         // Cuando se haga una peticion esta sera la respuesta que estamos creando arriba
         return new Response( JSON.stringify(newResp) );
     });
+}
 
+function postearMensajes(){
+    const posteos = []; // Aqui almacenmos todo los posteos que tenemos que hacer a la base de datos
 
+    // Recorremos todos los documentos que tengamos en la base de datos local, le pasamos True para que incluya los documentos
+    // Esto es lo que le mandamos al SW
+    return db.allDocs({ include_docs: true }).then( docs => {
+        // Aqui no tenemos directamente los documentos sino que tenemos el indicador que nos dice la cantidad de registros entre otras cosas
+        // y dentro vienen las filas (entonces recorremos cada una de esas filas)
+        // Cada una de estos FetchApi tenemos que esperar a que se terminen
+        docs.rows.forEach(row => {
+            // Extraemos el documento que se encuentra dentro del Row
+            const doc = row.doc;
+
+            // Ese Doc es ya la informacion que se quiere postear y tenemos que disparar el Fetch como metodo Post
+            const fetchProm = fetch('api', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify( doc )
+            }).then(res => {
+                // Si la respuesta Falla como esto estara dentro del Evento SYNC este lo intentara hasta que tenga exito
+                // Si estamos aqui es que ya realizo el posteo en ese caso tenemos que borrar el registro del Row de la base de datos local
+                // porque ya se posteo y si tubieramos otro posteo offline  se volveria a crear el registro
+                return db.remove( doc ); // Para que nos regrese la promesa y se almacene en la constante
+            });
+
+            // Almacenamos los Posteos
+            posteos.push( fetchProm );
+
+            // Tenemos que esperar a que todas las promesas que esten dentro del este posteo Terminen
+        });
+
+        // Asi espera a que todas las promesas esperara a que se resuelvan
+        return Promise.all( posteos );
+
+    });
 }

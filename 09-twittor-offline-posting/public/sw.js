@@ -125,8 +125,11 @@ self.addEventListener('sync', e => {
     // Como podemos tener varias acciones asincronas y les podemos dar varios tratamientos independientes segun el tratamiento
     if( e.tag === 'nuevo-post' ){ // Verificamos cual fue la tarea registrada (El tag que especificamos nosotros fue "nuevo-post")
         // Postear a BD cuando hay conexion
+        // No recibe ningun argumento porque todo lo tenemos almacenado en el IndexDB
+        const respuesta  = postearMensajes();
 
-        // Esperamos hasta que se termine para pasar a la siguiente accion
+        // Esperamos hasta que se termine para pasar a la siguiente accion porque los posteos pueden durar 
+        e.waitUntil(respuesta);
     }
 });
 // Podemos hacer la prueba cerrando el Servicio de Node y apagando la conexion
