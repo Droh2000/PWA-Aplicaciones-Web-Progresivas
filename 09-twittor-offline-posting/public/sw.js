@@ -74,35 +74,41 @@ self.addEventListener('activate', e => {
 
 
 self.addEventListener( 'fetch', e => {
+    // Vamos a cambiar la estrategia del cache para que sea Network With Cache Callback, es decir si no logra hacer el Fetch Primero
+    // entonces va a traernos lo que se encuentre en el cache, pero esto solo lo queremos hacer cuando se ejecute una peticion a la API
+    // La logica implementada aqui es: Se hace el Fetch no importa que peticion sea y todo entrea por aqui
 
+    let respuesta;
 
-    const respuesta = caches.match( e.request ).then( res => {
+    // Este proceso no se debe de ejecutar cuando se llama nuestra api
+    // Ponemos "/api" y no la palabra "api" porque podria detectar los CDN que tambien incluyen esa palabra
+    if( e.request.url.includes('/api') ){
+        // La implementacion del Network With Cache Callback lo implementamos aqui
+        respuesta = manejoApiMensajes( DYNAMIC_CACHE, e.request );
+    }else{
+        respuesta = caches.match( e.request ).then( res => {
 
-        if ( res ) {
-            // anteriormente teniamos esta linea comentada y nuestra estrategia era Cache With Network Callback
-            // Es decir si no se encontraba en el cache se iba a la web, hacia el Fetch y lo grabab en el cache 
-            // y despues solo tomaba los datos del cache 
-            // Ahora con esta linea queremos implementar Cache With Network Update (Despues de que recibimos la informacion del Cache)
-            // la respondemos y rapidamente tenemos la respuesta en el cliente pero a su vez vamos a lanzar una actualizacion del cache
-            // Aqui mandamos el nombre del cache, el Request que nos estan socilicitando y mandamos todo el arreglo que esta en el Inmmutable
-            actualizaCacheStatico( STATIC_CACHE, e.request, APP_SHELL_INMUTABLE );
-            return res;
-        } else {
+            if ( res ) {
+                // anteriormente teniamos esta linea comentada y nuestra estrategia era Cache With Network Callback
+                // Es decir si no se encontraba en el cache se iba a la web, hacia el Fetch y lo grabab en el cache 
+                // y despues solo tomaba los datos del cache 
+                // Ahora con esta linea queremos implementar Cache With Network Update (Despues de que recibimos la informacion del Cache)
+                // la respondemos y rapidamente tenemos la respuesta en el cliente pero a su vez vamos a lanzar una actualizacion del cache
+                // Aqui mandamos el nombre del cache, el Request que nos estan socilicitando y mandamos todo el arreglo que esta en el Inmmutable
+                actualizaCacheStatico( STATIC_CACHE, e.request, APP_SHELL_INMUTABLE );
+                return res;
+            } else {
 
-            return fetch( e.request ).then( newRes => {
+                return fetch( e.request ).then( newRes => {
 
-                return actualizaCacheDinamico( DYNAMIC_CACHE, e.request, newRes );
-
-            });
-
-        }
-
-    });
-
-
-
+                    return actualizaCacheDinamico( DYNAMIC_CACHE, e.request, newRes );
+                });
+            }
+        });
+    }
+    // Despues de esta implementacion al cambiar el arreglo de mensajes y recargar el navegador, debemos de ver lo luego los nuevo mensajes
+    // Al perder la conexion debemos de seguir viendo el mensaje en e fronted porque lo esta tomando del cache
     e.respondWith( respuesta );
-
 });
 
 
