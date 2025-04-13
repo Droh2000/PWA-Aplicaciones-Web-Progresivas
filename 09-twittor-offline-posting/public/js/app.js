@@ -40,7 +40,7 @@ var usuario;
 
 
 // ===== Codigo de la aplicaciÃ³n
-
+// Con esta funcion podemos renderizar los mensajes que recivamos del backend
 function crearMensajeHTML(mensaje, personaje) {
 
     var content =`
@@ -143,3 +143,31 @@ postBtn.on('click', function() {
     crearMensajeHTML( mensaje, usuario );
 
 });
+
+// Consumir los datos del Backend
+function getMensajes(){
+    //fetch('https://localhost:3000/api')
+    // Como el backend esta corriendo en el mismo Hosting solo hay que poner asi
+    fetch('api')
+    // Convertimos la respuesta a JSON para extraer los datos que nos interesa
+    .then(resp => resp.json())
+    // Este es el Arreglo de los mensajes que tenemos almacenados
+    .then( posts => {
+        // Despues de esta implementacion ocurre que al agregar mensajes y recargar la pagina no salen los nuevos mensajes
+        // sino hasta la segunda recarga de la pagina, esto es por la estrategia del cache que implementamos
+        // si nos vamos a Application -> Cache Storage -> dynamicv1 (Aqui estamos haciendo un Backup de la peticion que hacemos`)
+        // entonces la peticion GET la esta almacenando tanto aqui como en el StaticV1, entonces en el "sw.js" en la parte del Fetch
+        // tenemos que implementar una condicion para cuando haga un llamado a la API no la almacene en el cache porque nos interesa que cuando
+        // la aplicacion carge, nos traiga los ultimos mensajes, no nos traiga la ultimo que cargamos
+        console.log(posts);
+
+        // Para mostrar los mensajes en el Frontend
+        posts.forEach(post => {
+            crearMensajeHTML(post.mensaje, post.user);
+        });
+    });
+}
+
+// Como este es el archivo leido la primera vez, requerimos que se lea esta funcion lo luego
+// para obtener los mensajes
+getMensajes();
