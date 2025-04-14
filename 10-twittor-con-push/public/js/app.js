@@ -221,6 +221,21 @@ isOnline();
 
 // Notificaciones
 
+// Funcion para activar o desactivar los botones que tenemos en la pantalla de inicio 
+// Queremos recibir por argumento si estan activadas las notificaciones
+function verificarSuscripcion( activadas ){
+    if( activadas ){
+        btnActivadas.removeClass('oculto');
+        btnDesactivadas.addClass('oculto');
+    }else{
+        btnActivadas.addClass('oculto');
+        btnDesactivadas.removeClass('oculto');
+    }
+}
+
+// Llamamos la funcio para que por defecto nos salga el boton de notificaciones desactivadas porque es el que vamos a programar
+verificarSuscripcion();
+
 function enviarNotificaciones(){
     const notificationOptions = {
         body: 'Este es el cuerpo de la notificacion',
@@ -263,4 +278,4 @@ function notificarme(){
     }
 }
 
-notificarme();
+//notificarme();
