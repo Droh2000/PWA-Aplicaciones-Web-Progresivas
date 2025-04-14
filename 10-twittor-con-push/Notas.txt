@@ -1,0 +1,51 @@
+Notificacion Push
+    Es la forma que tiene el servidor de mandar una notificacion al usuario directamente en su dispositivo
+
+Push Sever
+    Es el servidor encargado de mantener y manejar las suscripciones
+
+Pasos necesarios para poder mandar las notificaciones push
+    Lo primero es tener el permiso del usuario, hay tres estados para esto:
+        1. Granted: Quiere decir que el usuario acepto recibir las notificaciones
+        2. Denied: El usuario no quiere recibir las notificaciones (Podemos detectar que estan bloquedas y volver a decir al usuario 
+                   si las quiere activar)
+        3. Default: Estos son los usuarios que en su configuracion aceptaron todas
+    Tips para mejorar el indice de aceptacion de ese mensaje que le pregunta al usuario si quiere recibir notificaciones
+        * Saber el momento correcto de preguntar
+        * Mostrar los beneficiones en el mensaje al usuario
+
+        El error es preguntar al inicio y el usuario no sabe para que entonces lo rechaza
+        Lo que se hace mejor es que si el usuario esta en una pagina de pedidos, le mostraremos el mensaje no preguntandole si quiere recibir notificaciones
+        sino mejor le preguntamos si: "Desea estar notificado cuando su pedido este en camino?" o supongamos que estamos en una pagina de reservaciones para un hotel
+        entonces le mostramos al usuario justo despues de que realize la transaccion: "Desea ser notificado cuando la reservacion este lista?"
+    
+    El segundo paso es cuando tenemos acceso para mandarle notificaciones al usuario, aqui tenemos la suscripcion que para esto tenemos que pasar por un servicio
+    de terceros que normalmente es ofrecido por el mismo navegador Web, en el caso de navegadores que usen Android tenemos que usar Firebase
+
+Proceso del envio de una notificacion Push desde que entra a nuestra aplicacion web hasta que recibe la notificacion web
+
+    Supongamos que el usuario entra a nuestra aplicacion y la esta usando, le sale el mensaje de si quiere recibir notificaciones y la persona acepta, lo que sigue 
+    es que la aplicacion va a mandar una solicitud al servidor, el Backend va a tener dos llaves, la publica y la privada, el usuario va a solicitar la llave publica 
+    y jamas le vamos a mandar la privada, la privada tiene que ser protegida porque si una persona tiene la llave privada va a poder mandar notificaciones a los usuarios
+
+    Entonces el backend le responde con la llave publica al usuario, cuando el dispoditivo del usuario recibe la llave publica, llega a la aplicacion, esto sera atrapado
+    por el SW que tomara esa llave, va a crear un suscripcion con los parametros que identifican este dispositivo y va a volver a hacer otra solicitud al backend con la
+    suscripcion, el backend recibe esa suscripcion y tiene que ser almacenada en alguna BD o algun archivo, el hecho es no perder esa subscripcion porque es como perder  
+    un Email para una empresa de correos y con esta subscripcion tenemos el acceso a mandarle notificaciones directamente al dispositivo del usuario (Con la subscripcion 
+    es como podemos mandar la notificacion push). Cuando recibimos la subscripcion podemos identificar el usuario y otro datos mas para saber a cual o cuales mandarle ciertas notificaciones
+
+    Despues el Backend va a enviar la subscripcion al Messaging Service (En Android seria el FireBase), nosotros nos despreocupamos de cual Messagin Sever tenemos que llamar
+    eso se maneja de forma automatica en la subscripcion (En la suscripcion tenemos a que servicio se tiene que llamar), al llamar el Messagin Service le decimos lo que queremos que se muestre
+    y este es el que dispara la notificacion push al cliente, asi es como la aplicacion recibe la notificacion y dependiendo del SO puede hacer ciertas cosas 
+
+Que pasa si el usuario borra nuestra aplicacion y la vuelve a instalar
+
+    Cuando esto ocurre el usuario nos creara una nueva suscripcion a su dispositivo por consecuencia la que teniamos almacenada en nuestro Backend
+    ya no funciona y cuando intentamos mandar una notificacion Push a esa subscripcion que ya no sirve, recibiremos del Messaging Service un mensaje de error
+    de 410 (Gone) donde nos enteramos que la subscripcion ya no sirve y la podemos borrar
+
+La subscripcion internamente contiene:
+    El endpoint que seria el destino de la notificacion Push
+    Tenemos los Keys donde tenemos el "Auth" que seria del cliente y la otra es la llave publica encriptada
+
+    Esto es lo que se manda al Messaging Service para saber a quien se lo tenemos que enviar 
