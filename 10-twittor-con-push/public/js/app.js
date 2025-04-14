@@ -219,3 +219,48 @@ window.addEventListener('offline', isOnline );
 
 isOnline();
 
+// Notificaciones
+
+function enviarNotificaciones(){
+    const notificationOptions = {
+        body: 'Este es el cuerpo de la notificacion',
+        icon: 'img/icons/icon-72x72.png'
+    };
+
+    // Si queremos ejecutar codigo cuando esta notificacion se seleccion podemos almacenarla en una consola
+    // Esto es solo una demostracion porque esto se hace del lado del SW
+    const n = new Notification('Hola Mundo', notificationOptions);
+
+    n.click = () => {
+        console.log('Click');
+    }
+}
+
+// Funcion para pedirle el acceso a los usuario de las notificaciones
+function notificarme(){
+    // Primero verificamos si el navegador web soporta las notificaciones
+    if( !window.Notification ){
+        console.log('Este Navegador no soporta notificaciones');
+        return;
+    }   
+    
+    // En este punto si lo soporta
+    // Aqui queremos hacer una confirmacion, en caso que ya se le ah otorgado previmente
+    // (Si ya anteriormente le preguntamos al usuario si desea recibir notificaciones)
+    if( Notification.permission === 'granted' ){
+        //new Notification('Hola Mundo! - Granted');
+        enviarNotificaciones();
+    // Si no se ah negado o esta en su estado por defecto entonces hay que solicitar al usuario que las active
+    }else if( Notification.permission !== 'denied' || Notification.permission === 'default' ){
+        Notification.requestPermission( function( permission ){
+            // Aqui adentro podemos ver cual es la opcion del usuario que nos selecciono
+            console.log(permission);
+            // En este caso acepto notificaciones
+            if( permission === 'granted' ){
+                new Notification('Hola Mundo! - Pregunta');
+            }
+        });
+    }
+}
+
+notificarme();
