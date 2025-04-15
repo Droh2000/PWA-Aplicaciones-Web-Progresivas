@@ -52,7 +52,8 @@ router.post('/subscribe', (req, res) => {
 router.get('/key', (req, res) => {
   // Nos creamos un modulo llamado Push para no mesclarlos con lo que son de las rutas 
   const key = push.getKey();
-  res.json(key);
+  // No requerimos pasarla como un JSON sino como un arrayBuffer, como esta conversion ya la hicimos 
+  res.send(key);
 });
 
 // Para Enviar una notificacion PUSH a las personas que nosotros queramos

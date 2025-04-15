@@ -279,3 +279,18 @@ function notificarme(){
 }
 
 //notificarme();
+
+// Ahora debemos de tomar la llave publica y prepararla desde el fronted para que creemos nuestra subscripcion
+function getPublicKey() {
+    // llamamos la API que nos regresa la llave
+    /*fetch('api/key')
+        .then( res => res.text ) // Obtenemos la respuesta
+        .then( console.log )*/
+    // Lo de arriba eta una prueba, lo que tenemos que hacer es lo siguiente
+    return fetch('api/key')
+        .then( res => res.arrayBuffer() )
+        // Retornamos el arreglo pero como un Unit8array (Esto es lo que nesecita la subscripcion)
+        .then( key => new Uint8Array(key) );
+}
+
+getPublicKey().then( console.log );
