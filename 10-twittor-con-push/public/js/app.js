@@ -1,7 +1,7 @@
 
 var url = window.location.href;
 var swLocation = '/twittor/sw.js';
-
+var swReg;
 
 if ( navigator.serviceWorker ) {
 
@@ -10,13 +10,23 @@ if ( navigator.serviceWorker ) {
         swLocation = '/sw.js';
     }
 
-
-    navigator.serviceWorker.register( swLocation );
+    /*
+        Una buena practica es registrar el Service Worker hasta que el navegador web carga en su totalidad todo lo que es de la aplicacion
+        porque el SW hace instalaciones y otras cosas del Fetch porlo que podriamos hacer que nuestra aplicacion sea un poco lenta
+        Entonces hagamos el registro cuando nuestra pagina Web ya este cargada  
+    */
+   window.addEventListener('load', function() {
+        // Lo colocamos aqui porque cuando el SW maneje la subscripcion reuerimos hacer algo en la pagina web y cuando por ejemplo toquemos el boton
+        // de actitvar las notificaciones requerimos trabajar con el mismo registro del SW, para eso creamos la constante arriba
+        navigator.serviceWorker.register( swLocation ).then( function(reg){
+            swReg = reg;
+            // Ahora queremos confirmar si ya estamos subscritos a las notificaciones o no
+            // Si este objeto nos regresa cualquier cosa diferente de undefined quiere decir que podemos llamar la funcion que verifica la subscripcion
+            // Sin los parentesis porque queremos que ejecute la subscripcion inmediatamente
+            swReg.pushManager.getSubscription().then( verificarSuscripcion );
+        });
+   });
 }
-
-
-
-
 
 // Referencias de jQuery
 
@@ -234,7 +244,8 @@ function verificarSuscripcion( activadas ){
 }
 
 // Llamamos la funcio para que por defecto nos salga el boton de notificaciones desactivadas porque es el que vamos a programar
-verificarSuscripcion();
+// Al comentarla hacemos que solo se llame esta funcion al inicio (Que es cuando el SW es registrado)
+//verificarSuscripcion();
 
 function enviarNotificaciones(){
     const notificationOptions = {
@@ -293,4 +304,28 @@ function getPublicKey() {
         .then( key => new Uint8Array(key) );
 }
 
-getPublicKey().then( console.log );
+//getPublicKey().then( console.log );
+
+// Queremos hacer todo el proceso de subscripcion cuando el usuario haga click en el boton Rojo de Notificaciones Desactivadas
+btnDesactivadas.on( 'click', function(){
+    // Verificamos primero si no existe el registro del SW entonces no podemos hacer nada
+    if( !swReg ) return console.log('No hay registro del Service Worker');
+
+    // Si todo esta Ok obtenemos la llave, esa llave es la que requerimos para crear el registro en el SW
+    getPublicKey().then(function(key){
+        
+        swReg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: key
+        })
+        .then( res => res.toJSON() )
+        .then( suscripcion => {
+            console.log(suscripcion);
+            verificarSuscripcion(suscripcion);
+        });
+    });
+
+    // Al precionar el boton de color rojo veremos que cambia a color azul
+    // En consola veremos toda la informacion para poder mandar notificaciones push
+    // El proceso del pushManager tambien genera el prompt de si quiere recibir notificaciones
+});
