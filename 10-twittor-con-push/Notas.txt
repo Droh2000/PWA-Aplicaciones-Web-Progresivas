@@ -49,3 +49,11 @@ La subscripcion internamente contiene:
     Tenemos los Keys donde tenemos el "Auth" que seria del cliente y la otra es la llave publica encriptada
 
     Esto es lo que se manda al Messaging Service para saber a quien se lo tenemos que enviar 
+
+Para Generar llave Publica y Privada
+    Para esto instalamos el paquete de NPM web-push que nos permite generar rapidamente las llaves para poder enviar las notifiaciones push
+    Hay que tener cuidado con cada ocacion que generamos nueva llaves todas nuestras subscripciones que tangamos almacenadas dejaran de funcionar
+
+    En archivo de Package.json creamos un comando para generar esas llaves cuando lo requiramos, este comando se llama "generate-vapid"
+    Para ejecutarlo seria:
+        - npm run generate-vapid

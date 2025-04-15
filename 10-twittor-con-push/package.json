@@ -6,13 +6,15 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node server/server.js",
-        "dev": "node ./node_modules/nodemon/bin/nodemon.js server/server"
+        "dev": "node ./node_modules/nodemon/bin/nodemon.js server/server",
+        "generate-vapid": "node /Users/gomez/OneDrive/Documentos/PWA/10-twittor-con-push/node_modules/web-push/src/cli.js generate-vapid-keys --json > server/vapid.json"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
         "body-parser": "^2.2.0",
-        "express": "^4.16.3"
+        "express": "^4.16.3",
+        "web-push": "^3.6.7"
     },
     "devDependencies": {
         "nodemon": "^1.18.4"
