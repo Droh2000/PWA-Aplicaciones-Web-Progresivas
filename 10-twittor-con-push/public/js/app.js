@@ -328,11 +328,24 @@ btnDesactivadas.on( 'click', function(){
                 body: JSON.stringify( suscripcion )
             })
             .then( verificarSuscripcion )
-            .catch( console.log );
+            .catch( cancelarSuscripcion ); // Si ocurre un error en la suscripcion
         });
     });
 
     // Al precionar el boton de color rojo veremos que cambia a color azul
     // En consola veremos toda la informacion para poder mandar notificaciones push
     // El proceso del pushManager tambien genera el prompt de si quiere recibir notificaciones
+});
+
+// Para cancelar la suscripicion (Esto lo vamos a hacer desde el fronted)
+function cancelarSuscripcion() {
+    // Tomamos el registro del SW, llamamos a la suscripcion actual esto nos regresa una promesa en donde tenemos la suscripcion
+    swReg.pushManager.getSubscription().then( subs => {
+        // Aqui podemos cancelar la suscripcion
+        subs.unsubscribe(() => verificarSuscripcion(false)); // AQui da Error "unsuscribe"
+    })
+}
+
+btnActivadas.on('click', function(){
+    cancelarSuscripcion();
 });
