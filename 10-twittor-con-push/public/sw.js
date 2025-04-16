@@ -139,15 +139,30 @@ self.addEventListener('push', e => {
     // Con esto al especificar las propiedades en el Postman y enviar la Request, obtendremos en la consola del navegador estos datos
     // Lo que nos interesa es lo que esta en el campo "data" pero viene como un PushMessageData, pero podemos mandar un objeto serializado como un Hola mundo
     // la notificacion cae y es manejada del lado del Service worker
-     //console.log(e);
-     console.log(e.data.text());
+    //console.log(e);
+    //console.log(e.data.text());
 
-     // Ahora en el SW vamos a mostrar la notificacion
-     const title = e.data.text();
-     const option = {};
+    // Toda la informacion que viene de la notificacion Push es recivida como JSON por eso usamos este metodo para convertirla
+    const data = JSON.parse( e.data.text() );
 
-     // Para mandar la notificacion, pero como toda accion en el SW tenemos que esperar a que termine, asi que nos interesa a que la notificacion
-     // haga todo lo que tenga que hacer
-     e.waitUntil( self.registration.showNotification(title, option) );
+    // Ahora en el SW vamos a mostrar la notificacion
+    const title = data.titulo;
+    // Tenemos varias opciones para las notificaciones
+    const option = {
+        body: data.cuerpo,
+        icon: `img/avatars/${ data.usuario }.jpg`,
+        // Este es el icono que le vamos a poner para cuando salga la notificacion en los dispositivos de Android
+        badge: 'img/favicon.ico',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDnp6zj6aLBUll2xguxn0qMv52Uvn-R3X40A&s', // Imagen como Baner principal
+        // Patron de vibracion podemos mandarle estos datos sacado de paginas para darle un sonido
+        vibrate: [125,75,125,275,200,275,125,75,125,275,200,600,200,600],
+        // Esta es la direccion que queremos abrir cuando se haga click
+        openUrl: '/'
+    };
+    // Muchas de estas opciones las tenemos que probar en el dispositivo movil
+
+    // Para mandar la notificacion, pero como toda accion en el SW tenemos que esperar a que termine, asi que nos interesa a que la notificacion
+    // haga todo lo que tenga que hacer
+    e.waitUntil( self.registration.showNotification(title, option) );
 
 });

@@ -70,15 +70,15 @@ router.post('/push', (req, res) => {
   // Cuando llamemos el servicio Push vamos a extraer la informacion que viene en el POST
   // Esto lo probamos en el Postman con la opcion de "x-www-form-urlencoded" donde definimos las propiedades que queremos enviar
   // Estas son las priopiedades que definimos
-  const notificacion = {
+  const post = {
     titulo: req.body.titulo,
     cuerpo: req.body.cuerpo,
     usuario: req.body.usuario
   }
 
-  push.sendPush( notificacion );
+  push.sendPush( post );
 
-  res.json(notificacion);
+  res.json(post);
 });
 
 module.exports = router;

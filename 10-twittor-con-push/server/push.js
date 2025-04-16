@@ -45,8 +45,9 @@ module.exports.sendPush = ( post ) => {
     // Aqui nos interesa obtener la pocicion "i" para poder eliminar las suscripciones que no nos sirven 
     suscripciones.forEach( (suscripcion, i) => {
         // Adentro tenemos la suscripcion a la que le podemos mandar notificacion y la informacion que le queremos mandar
-        // La propiedad "titulo" es la que estamos leyendo del POST del "/push"
-        webpush.sendNotification( suscripcion, post.titulo );
+        // La propiedad "titulo" es la que estamos leyendo del POST del "/push", en un inicio mandamos el titulo
+        // pero en el Post tenemos bastante informacion y eso es lo que mejor mandamos
+        webpush.sendNotification( suscripcion, JSON.stringify(post) );
 
     })
 }
