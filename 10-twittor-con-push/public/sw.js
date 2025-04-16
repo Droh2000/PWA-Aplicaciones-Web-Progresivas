@@ -161,7 +161,9 @@ self.addEventListener('push', e => {
         // Estos datos van a estar contenidos en la notificacion
         data: {
             // Aqui podemos poner lo que queramos
-            url: 'https://google.com',
+            //url: 'https://google.com',
+            // Esto seria bueno si el navegador esta cerrado pero si ya esta abierta la aplicacion no tendria mucho sentido mandarnos a otra pestana sino a la parte de la notificacion
+            url: '/', // Asi para indicar que ingrese al sitio de nuestra aplicacion
             id: data.usuario
         },
         // Estas son las acciones que no son tan usadas porque normalmente solo las tocamos y que se desencadene las acciones por defecto
@@ -170,6 +172,7 @@ self.addEventListener('push', e => {
             {
                 action: 'thor-action',
                 title: 'Thor',
+                // Si al probar en el celular no sale la imagen, lo recomendable es usar URL que incien con https://...
                 icon: 'img/avatar/thor.jpg'
             },
             {
@@ -202,6 +205,30 @@ self.addEventListener('notificationclick', e => {
     const accion = e.action;
     // Si vemos en consola veremos que al tocar en el cuerpo de la notificacion no recibimos ninguna accion, esto es solo cuando tocamos en alguna de las acciones
 
-    // En el momento que se llame esto, se cierra la notificacion
-    notificacion.close();
+    // Queremos que si ya tenemos abierta la aplicacion en una TAB queremos que nos redireccione al hacer click en esa pestana pero si no esta abierta 
+    // la aplicacion que la abra (Con matchAll agarramos todos los TAbs abiertos del mismo sitio)
+    const resp = clients.matchAll().then( clientes => {
+        // Aqui tenemos todos los TAB abiertos de la aplicacion, el parametro "clientes" es un arreglo de todos los TABs abiertos y si no hay abiertos nos regresa un undefined
+        // Solo queremos que mueva el TAB que se encuentra visible porque podriamos redireccionarlo a todos pero solo queremos hacer en el que esta visible
+        let cliente = clientes.find( c => {
+            // Solo queremos ver si esta visible (Con esto sabemos que si hay algun)
+            return c.visibilityState === 'visible';
+        });
+
+        // Navegamos el cliente a la pantalla que queramos
+        if( cliente !== undefined ){
+            cliente.navigate( notificacion.data.url );
+            cliente.focus(); // Para que ese TAB es el que sea activo en el navegador del cliente
+        } else {
+            // Caso contrario significa que no tenemos ninguna pestana de Chrome Abierta o activa
+            // Esto es lo que queremos que pase cuando hacemos click en el cuadro de notificacion
+            // En este caso por las opciones que tenemos definidas vamos a poner de la data, la url que especificamos
+            clients.openWindow( notificacion.data.url ); // clients es un objeto que esta de forma global
+        }
+        // En el momento que se llame esto, se cierra la notificacion
+        return notificacion.close();
+    });
+
+    // Podemos esperar a que termine la promesa hasta que se hayan resolvido todas las acciones
+    e.waitUntil( respuesta );
 });
