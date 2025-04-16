@@ -157,7 +157,28 @@ self.addEventListener('push', e => {
         // Patron de vibracion podemos mandarle estos datos sacado de paginas para darle un sonido
         vibrate: [125,75,125,275,200,275,125,75,125,275,200,600,200,600],
         // Esta es la direccion que queremos abrir cuando se haga click
-        openUrl: '/'
+        openUrl: '/',
+        // Estos datos van a estar contenidos en la notificacion
+        data: {
+            // Aqui podemos poner lo que queramos
+            url: 'https://google.com',
+            id: data.usuario
+        },
+        // Estas son las acciones que no son tan usadas porque normalmente solo las tocamos y que se desencadene las acciones por defecto
+        // asi que estas son acciones personalizadas (Aqui podriamos indicar un CRUD)
+        actions: [
+            {
+                action: 'thor-action',
+                title: 'Thor',
+                icon: 'img/avatar/thor.jpg'
+            },
+            {
+                action: 'ironman-action',
+                title: 'Ironman',
+                icon: 'img/avatar/ironman.jpg'
+            }
+            // Estas acciones las vemos al recibir la notificacion en los tres puntos al hacer click tenemos mas acciones
+        ]
     };
     // Muchas de estas opciones las tenemos que probar en el dispositivo movil
 
@@ -165,4 +186,22 @@ self.addEventListener('push', e => {
     // haga todo lo que tenga que hacer
     e.waitUntil( self.registration.showNotification(title, option) );
 
+});
+
+// Ahora tenemos definidas acciones para las notificacion pero si hacemo click en ellas no pasa nada, vamos a ver que tenemos dos eventos
+// relacionados, esta es cuando se cierra la notificacion
+self.addEventListener('notificationclose', e => {
+    console.log('Notificacion Cerrada', e);
+});
+
+// Este es cuando se hace click en la notificacion (Esta se ejecuta cuando el usuario toca la notificacion o toca alguna de las acciones)
+self.addEventListener('notificationclick', e => {
+    // Obtenemos referencia a todas las opciones que definimos 
+    const notificacion = e.notification;
+    // Esto es la accion que la persona toco
+    const accion = e.action;
+    // Si vemos en consola veremos que al tocar en el cuerpo de la notificacion no recibimos ninguna accion, esto es solo cuando tocamos en alguna de las acciones
+
+    // En el momento que se llame esto, se cierra la notificacion
+    notificacion.close();
 });
