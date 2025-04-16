@@ -83,6 +83,7 @@ self.addEventListener( 'fetch', e => {
 
     let respuesta;
 
+    // Recordemos que todas las peticiones que se hagan al Fetch que incluyen la palabra '/api' con procesadas por esta funcion "manejoApiMensajes"
     if ( e.request.url.includes('/api') ) {
 
         // return respuesta????

@@ -307,6 +307,7 @@ function getPublicKey() {
 //getPublicKey().then( console.log );
 
 // Queremos hacer todo el proceso de subscripcion cuando el usuario haga click en el boton Rojo de Notificaciones Desactivadas
+// Aqui tenemos todo el proceso para generar la suscripcion y mandarla con el POST
 btnDesactivadas.on( 'click', function(){
     // Verificamos primero si no existe el registro del SW entonces no podemos hacer nada
     if( !swReg ) return console.log('No hay registro del Service Worker');
@@ -320,8 +321,14 @@ btnDesactivadas.on( 'click', function(){
         })
         .then( res => res.toJSON() )
         .then( suscripcion => {
-            console.log(suscripcion);
-            verificarSuscripcion(suscripcion);
+            //console.log(suscripcion); -> Aqui tenemos la subscripcion
+            fetch('api/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify( suscripcion )
+            })
+            .then( verificarSuscripcion )
+            .catch( console.log );
         });
     });
 

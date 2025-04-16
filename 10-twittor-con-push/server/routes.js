@@ -44,6 +44,13 @@ router.post('/', function (req, res) {
 
 // Para almacenar la subscricion (Aqui manejamos cuando el cliente se subscriba)
 router.post('/subscribe', (req, res) => {
+  const suscripcion = req.body;
+  //console.log( suscripcion );
+  // Con esta subscripcion la tenemos que almacenar en una base de datos donde podramos mantenerla 
+  // en algun caso que el servidor se reinicie (Por el momento vamos a hacer una coleccion de todas estas suscrpciones)
+  // Usamos el modulo push para el manejo de la Key
+  push.addSubscription( suscripcion );
+
   res.json('subscribe');
 });
 

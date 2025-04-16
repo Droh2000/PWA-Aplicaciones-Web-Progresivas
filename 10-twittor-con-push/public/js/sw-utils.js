@@ -43,23 +43,23 @@ function actualizaCacheStatico( staticCache, req, APP_SHELL_INMUTABLE ) {
 // Network with cache fallback / update
 function manejoApiMensajes( cacheName, req ) {
 
+    // Hay que modificar la peticion POST por el manejo de la suscripcion
+    // Verificamos si viene algo del Key o del subscribe porque no nos interesa almacenar nada esto en la Key
+    if( (req.url.indexOf('/api/key') >= 0 ) || req.url.indexOf('/api/subscribe') >= 0 ){
+        // Solo hacemos el return de la misma peticion sin almacenarlo en cache (Estas peticiones pasan directamente a la Red)   
+        return fetch( req );
 
-    if ( req.clone().method === 'POST' ) {
+    }else if ( req.clone().method === 'POST' ) {
         // POSTEO de un nuevo mensaje
-
         if ( self.registration.sync ) {
             return req.clone().text().then( body =>{
-    
                 // console.log(body);
                 const bodyObj = JSON.parse( body );
                 return guardarMensaje( bodyObj );
-    
             });
         } else {
             return fetch( req );
         }
-
-
     } else {
 
         return fetch( req ).then( res => {
