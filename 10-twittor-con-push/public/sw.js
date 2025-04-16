@@ -133,3 +133,21 @@ self.addEventListener('sync', e => {
 
 
 });
+
+// Escuchar las notificaciones que mandamos (Debemos de recibir la notificacion sin tener el navegador abierto)
+self.addEventListener('push', e => {
+    // Con esto al especificar las propiedades en el Postman y enviar la Request, obtendremos en la consola del navegador estos datos
+    // Lo que nos interesa es lo que esta en el campo "data" pero viene como un PushMessageData, pero podemos mandar un objeto serializado como un Hola mundo
+    // la notificacion cae y es manejada del lado del Service worker
+     //console.log(e);
+     console.log(e.data.text());
+
+     // Ahora en el SW vamos a mostrar la notificacion
+     const title = e.data.text();
+     const option = {};
+
+     // Para mandar la notificacion, pero como toda accion en el SW tenemos que esperar a que termine, asi que nos interesa a que la notificacion
+     // haga todo lo que tenga que hacer
+     e.waitUntil( self.registration.showNotification(title, option) );
+
+});

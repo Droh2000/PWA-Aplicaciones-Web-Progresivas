@@ -67,7 +67,18 @@ router.get('/key', (req, res) => {
 // Normalmente esto no es mediante un servicio REST ya que es algo que se controla del lado del Server
 // No es un servicio que este expuesto sino solo algo que corra en el backend pero para fines de aprendisaje lo colocamos
 router.post('/push', (req, res) => {
-  res.json('');
+  // Cuando llamemos el servicio Push vamos a extraer la informacion que viene en el POST
+  // Esto lo probamos en el Postman con la opcion de "x-www-form-urlencoded" donde definimos las propiedades que queremos enviar
+  // Estas son las priopiedades que definimos
+  const notificacion = {
+    titulo: req.body.titulo,
+    cuerpo: req.body.cuerpo,
+    usuario: req.body.usuario
+  }
+
+  push.sendPush( notificacion );
+
+  res.json(notificacion);
 });
 
 module.exports = router;

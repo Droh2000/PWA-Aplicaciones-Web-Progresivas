@@ -57,3 +57,6 @@ Para Generar llave Publica y Privada
     En archivo de Package.json creamos un comando para generar esas llaves cuando lo requiramos, este comando se llama "generate-vapid"
     Para ejecutarlo seria:
         - npm run generate-vapid
+
+Instalamos este paquete para poder comunicarnos con los Push Services
+    - npm install web-push --save
