@@ -14,9 +14,7 @@ export class PaisesComponent {
 
   constructor(
     public paisService: PaisesService
-  ){}
-
-  ngOnInit() {
+  ){
     this.paisService.getPaises()
     .then( paises => this.paises = paises );
   }

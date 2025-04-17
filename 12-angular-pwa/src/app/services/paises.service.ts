@@ -18,12 +18,25 @@ export class PaisesService {
     }
 
     return new Promise( resolve => {
-      this.http.get('https://restcountries.com/v3.1/lang/es')
+      this.http.get('https://restcountries.com/v3.1/lang/spanish')
       .subscribe( (paises: any )=> {
         console.log(paises);
         this.paises = paises;
         resolve( paises );
       });
+    });
+  }
+
+  getPaisPorId( id: string ){
+    if( this.paises.length > 0 ){
+      // Hay paises en el arreglo
+      const pais = this.paises.find( p => p.alpha3Code === id );
+      return Promise.resolve( pais );
+    }
+
+    return this.getPaises().then( paises => {
+      const pais = this.paises.find( p => p.alpha3Code === id );
+      return Promise.resolve( pais );
     });
   }
 }
