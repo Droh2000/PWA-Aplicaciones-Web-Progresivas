@@ -479,11 +479,24 @@ function mostrarMapaModal(lat, lng) {
 
 
 // Obtener la geolocalización
+// En los permisos del navegador tenemos para darle los permisos de acceder a la localizacion, al igual que con la camara
 btnLocation.on('click', () => {
 
-    console.log('Botón geolocalización');
+    //console.log('Botón geolocalización');
+    $.mdtoast('Cargando Mapa...', {
+        interaction: true,
+        interactionTimeout: 2000,
+        actionText: 'Ok!'
+    });
     
+    // En el momento que toquemos el boton el navegador nos pedira que le demos permiso a la geolocalizacion
+    // Esto nos dara las coordenadas
+    navigator.geolocation.getCurrentPosition( pos => {
+        console.log(object)
 
+        // Mostrar el mapa en el HTML
+        mostrarMapaModal( pos.coords.latitude, pos.coords.longitude );
+    });
 });
 
 
