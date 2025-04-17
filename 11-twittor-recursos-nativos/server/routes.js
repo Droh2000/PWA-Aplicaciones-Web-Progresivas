@@ -24,10 +24,15 @@ router.get('/', function (req, res) {
 // Post mensaje
 router.post('/', function (req, res) {
   
+  // Confirmamos en el Servidor que resibimos la latitud y la longitud
+  console.log( req.body.lat );
+  console.log( req.body.lng );
 
   const mensaje = {
     mensaje: req.body.mensaje,
-    user: req.body.user
+    user: req.body.user,
+    lat: req.body.lat,
+    lng: req.body.lng
   };
 
   mensajes.push( mensaje );

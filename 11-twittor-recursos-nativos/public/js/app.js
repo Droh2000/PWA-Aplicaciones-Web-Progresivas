@@ -80,7 +80,7 @@ var usuario;
 
 // ===== Codigo de la aplicación
 
-function crearMensajeHTML(mensaje, personaje, lat, lng, foto) {
+function crearMensajeHTML(mensaje, personaje, lat, lng) {
 
     // console.log(mensaje, personaje, lat, lng);
 
@@ -98,13 +98,13 @@ function crearMensajeHTML(mensaje, personaje, lat, lng, foto) {
                 <br/>
                 ${ mensaje }
                 `;
-    
-    if ( foto ) {
+    // Si viene la foto inserta esto en el contenido HTML de mas arriba
+    /*if ( foto ) {
         content += `
                 <br>
                 <img class="foto-mensaje" src="${ foto }">
         `;
-    }
+    }*/
         
     content += `</div>        
                 <div class="arrow"></div>
@@ -123,7 +123,7 @@ function crearMensajeHTML(mensaje, personaje, lat, lng, foto) {
     lat = null;
     lng = null;
 
-    $('.modal-mapa').remove();
+    $('.modal-mapa').remove();// Removemos el espacio donde estaba el mapa para dar la imprecion que se reinicio todo
 
     timeline.prepend(content);
     cancelarBtn.click();
@@ -234,18 +234,17 @@ cancelarBtn.on('click', function() {
 // Boton de enviar mensaje
 postBtn.on('click', function() {
 
-    var mensaje = txtMensaje.val();
+    var mensaje = txtMensaje.val(); // Obtenemos la caja de texto
     if ( mensaje.length === 0 ) {
         cancelarBtn.click();
         return;
     }
-
+    // Tenemos los datos que queremos enviar 
     var data = {
         mensaje: mensaje,
         user: usuario,
         lat: lat,
-        lng: lng,
-        foto: foto
+        lng: lng
     };
 
 
@@ -260,10 +259,7 @@ postBtn.on('click', function() {
     .then( res => console.log( 'app.js', res ))
     .catch( err => console.log( 'app.js error:', err ));
 
-    camera.apagar();
-    contenedorCamara.addClass('oculto');
-
-    crearMensajeHTML( mensaje, usuario, lat, lng, foto );
+    crearMensajeHTML( mensaje, usuario, lat, lng );
     
     foto = null;
 });
@@ -277,6 +273,9 @@ function getMensajes() {
         .then( res => res.json() )
         .then( posts => {
 
+            // Si recargamos el navegador los mensajes deberian de obtener esa misma informacion porque los Post que estan 
+            // almcenados en el servidor tambien tienen la informacion de la latitud y la longitud
+            console.log(posts);
 
             posts.forEach( post => 
                 crearMensajeHTML( post.mensaje, post.user, post.lat, post.lng, post.foto ));
@@ -496,6 +495,10 @@ btnLocation.on('click', () => {
 
         // Mostrar el mapa en el HTML
         mostrarMapaModal( pos.coords.latitude, pos.coords.longitude );
+
+        // Queremos que cuando toquemos el lapiz vamos a mandar la coordenada obtenida de la ubicacion
+        lat = pos.coords.latitude;
+        lng = pos.coords.longitude;
     });
 });
 
