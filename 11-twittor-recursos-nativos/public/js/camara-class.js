@@ -22,6 +22,37 @@ class Camara {
     }
 
     apagar(){
+        // Pausamos el Video
+        this.videoNode.pause();
+        // Esto es para detener el Stream (Obtenemos el de la posicion 0 que es el video)
+        // Si lo detenemos y todabia no lo tenemos definido esto nos dara error por eso comprobamos con la validacion
+        if( this.stream ){
+            this.stream.getTracks()[0].stop();
+        }
+    }
 
+    // Obtenemos del Stream la imagen y lo pasamos por un canvas (Lienzo donde podemos colocar informacion)
+    tomarFoto(){
+        // Aqui vamos a renderizar la foto
+        let canvas = document.createElement('canvas');
+
+        // Colocar las dimenciones igual al elemento del Video
+        canvas.setAttribute('width', 300);
+        canvas.setAttribute('height', 300);
+
+        // Obtener el contexto del canvas
+        let context = canvas.getContext('2d');// una simple imagen
+
+        // dibujamos la imagen dentro del canvas
+        context.drawImage( this.videoNode, 0, 0, canvas.width, canvas.height );
+
+        // Extreamos la imagen (Esto nos da un string en base 64)
+        this.foto = context.canvas.toDataURL();
+
+        // Limpieza geenral
+        canvas = null;
+        context = null;
+
+        return this.foto;
     }
 }
