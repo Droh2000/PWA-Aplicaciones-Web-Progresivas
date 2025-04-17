@@ -84,9 +84,11 @@ const camara = new Camara( $('#player')[0] );
 function crearMensajeHTML(mensaje, personaje, lat, lng) {
 
     // console.log(mensaje, personaje, lat, lng);
-
+    // Aqui les especificamos el "data-tipo" para saber si son de mensaje o Mapa
     var content =`
     <li class="animated fadeIn fast"
+        data-user="${ personaje }"
+        data-mensaje="${ mensaje }"
         data-tipo="mensaje">
 
 
@@ -535,6 +537,49 @@ btnTomarFoto.on('click', () => {
 
 
 // Share API
+// El Share API es una forma para compartir objetos, cosas, enlaces, imagenes y mandarlos a alguna parte
+// lo que queremos hacer es que cuando toquemos una de las imagenes que subamos, nos abra una opcion para compartir
+// dicho contenido en Redes sociales o en otras App
+// Primero verificamos si nuestro navegador lo soporta
+if( navigator.share ){
+    // Al tocar una de las fotos de los heroes vamos a compartir sus mensajes, para esto usamos JQuery
+    // Le queremos agregar este listener a los LI de HTML
+    timeline.on('click', 'li', function(){
+        // Extreamos la informacion que tenga ese perfil
+        // Con esto obtenemos todo el elemento HTML al que le hicimos click
+        //console.log($(this));
 
+        // Extraigamos esas propiedades
+        //console.log($(this).data('tipo'));
+        //console.log($(this).data('user'));
+
+        // Sacamos la informacion queq queremos compartir
+        let tipo = $(this).data('tipo');
+        let lat = $(this).data('lat');
+        let lng = $(this).data('lng');
+        let mensaje = $(this).data('mensaje');
+        let user = $(this).data('user');
+
+        // Como mas adelante podemos compartir el URL y si tenemos el mapa podemos mandar la direccion del Mapa
+        // para que la persona haga click en el URL y lo redireccione al mapa
+        const shareOpts = {
+            title: user,
+            text: mensaje
+        };
+
+        // Si es el mapa le agregamos un mensaje por defecto
+        if( tipo === 'mapa' ){
+            shareOpts.text = 'Mapa',
+            // Despues del @ viene la latitud, la longitud y el Zoom
+            shareOpts.url = `https://www.google.com/maps/@${ lat }, ${ lng }, 15`;
+        }
+
+        // Uso de Share API
+        navigator.share(shareOpts)
+            .then(() => console.log('Successful share'))
+            .catch((error) => console.log('Error sharing', error));
+
+    });
+}
 
 
