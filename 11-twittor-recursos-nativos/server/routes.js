@@ -25,14 +25,15 @@ router.get('/', function (req, res) {
 router.post('/', function (req, res) {
   
   // Confirmamos en el Servidor que resibimos la latitud y la longitud
-  console.log( req.body.lat );
-  console.log( req.body.lng );
+  // console.log( req.body.lat );
+  // console.log( req.body.lng );
 
   const mensaje = {
     mensaje: req.body.mensaje,
     user: req.body.user,
     lat: req.body.lat,
-    lng: req.body.lng
+    lng: req.body.lng,
+    foto: req.body.foto // Esta es la propiedad que definimos en el objeto "data" en app.js
   };
 
   mensajes.push( mensaje );

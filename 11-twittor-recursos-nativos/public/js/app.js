@@ -100,12 +100,13 @@ function crearMensajeHTML(mensaje, personaje, lat, lng) {
                 ${ mensaje }
                 `;
     // Si viene la foto inserta esto en el contenido HTML de mas arriba
-    /*if ( foto ) {
+    if ( foto ) {
         content += `
                 <br>
                 <img class="foto-mensaje" src="${ foto }">
         `;
-    }*/
+    }
+    // Para que esto funcione tenemos que al enviar el mensaje escribir un comentario
         
     content += `</div>        
                 <div class="arrow"></div>
@@ -245,7 +246,8 @@ postBtn.on('click', function() {
         mensaje: mensaje,
         user: usuario,
         lat: lat,
-        lng: lng
+        lng: lng,
+        foto: foto // Si no viene la foto tendra NULL y podemos verificar asi si viene o no
     };
 
 
@@ -260,9 +262,9 @@ postBtn.on('click', function() {
     .then( res => console.log( 'app.js', res ))
     .catch( err => console.log( 'app.js error:', err ));
 
-    crearMensajeHTML( mensaje, usuario, lat, lng );
+    crearMensajeHTML( mensaje, usuario, lat, lng, foto );
     
-    foto = null;
+    foto = null; // Limpiamos la variable para no tener errores de memoria
 });
 
 
