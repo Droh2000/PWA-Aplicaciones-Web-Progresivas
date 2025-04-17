@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink } from '@angular/router';
+import { PaisesService } from '../../services/paises.service';
+import { PaisInterface } from '../../interfaces/pais.interface';
 
 @Component({
   selector: 'app-paises',
@@ -8,5 +10,14 @@ import { RouterLink, RouterOutlet } from '@angular/router';
   styleUrl: './paises.component.css'
 })
 export class PaisesComponent {
+  paises: PaisInterface[] = [];
 
+  constructor(
+    public paisService: PaisesService
+  ){}
+
+  ngOnInit() {
+    this.paisService.getPaises()
+    .then( paises => this.paises = paises );
+  }
 }
